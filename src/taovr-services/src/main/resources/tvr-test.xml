@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="tvr-test">
+
+	<selectSet id="getXxx">
+		select * from xxx
+	</selectSet>
+	
+<!-- 	<insert id="insertXxx" dsKey="writetvr" txRef="tx_02">
+		INSERT INTO xxx(user_id, user_name, context, create_time) VALUES(#{user_id}, #{user_name}, #{context}, now());
+	</insert>
+	
+	<selectOne id="getXxx1" dsKey="readtvr" txRef="tx_01">
+		select * from xxx where id = #{id}
+	</selectOne>
+	
+	<selectSet id="getXxx2" dsKey="readtvr" txRef="tx_01">
+		select * from xxx
+	</selectSet>
+	
+	<sql-service id="getXxx3" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{x}">
+			select * from xxx where id = #{id}
+		</selectOne>
+		<selectSet resultKey="{y}">
+			select * from xxx
+		</selectSet>
+		<return>
+			<property value="{x}"/>
+			<property value="{y}"/>
+		</return>
+	</sql-service>
+	
+	<insert id="insertmysql" dsKey="writetvr" txRef="tx_02">
+		INSERT INTO insertmysql(user_id, user_name, context, create_time) VALUES(#{user_id}, #{user_name}, #{context}, now());
+	</insert>
+	
+	<selectOne id="getMysql" dsKey="readtvr" txRef="tx_01">
+	  select * from insertmysql;
+	</selectOne>
+	<selectSet id="getMysqlList" dsKey="readtvr" txRef="tx_01">
+	  select * from insertmysql;
+	</selectSet>
+	<sql-service id="getMy" dsKey="readtvr" txRef="tx_01">
+	
+	<selectOne resultKey="{item}">
+	  select * from insertmysql;
+	</selectOne>
+	<selectSet resultKey="{list}">
+	  select * from insertmysql;
+	</selectSet>
+	<return>
+			<property value="{item}"/>
+			<property value="{list}"/>
+		</return>
+	</sql-service>
+ -->	 
+	
+</sqlservices>

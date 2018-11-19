@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd"
+	ns="v_user">
+	
+	<def id="IntegerChecker">
+		<rule name="最大值" value="10000" />
+	</def>
+	
+	<def id="StringChecker">
+		<rule name="最大长度" value="8" />
+	</def>
+	
+	<def id="mobile">
+		<rule name="匹配">
+			<![CDATA[ \d+ ]]>
+		</rule>
+	</def>
+
+	<ruleGroup id="userInfoChecker" desc="获取用户列表控制器" message="dafdsa">
+		<item name="age" type="int" require="true" ref="IntegerChecker" desc="用户姓名">
+			<rule name="最小值" value="18" />
+		</item>
+		<item name="age1" type="int" require="false" defaultValue="12" />
+		<item name="name" type="string" ref="StringChecker" message="姓名不合法" />
+	</ruleGroup>
+	
+	<def id="not_null_check">
+		<rule name="最大长度" value="32" />
+		<rule name="最小长度" value="1"/>
+	</def>
+	
+	<!-- 修改用户 -->
+	<ruleGroup id="update_p_user" desc="修改平台用户信息" message="修改平台用户信息错误">
+		<item name="nickname" type="string" require="true" ref="not_null_check" desc="用户昵称"  message="用户昵称不合法"/>
+		<item name="gender" type="String" require="true" desc="性别" message="用户性别不合法">
+			<rule name="枚举值" value="男,女,保密"/>
+		</item>
+		<item name="birthday" type="String" require="true" ref="not_null_check" desc="生日" message="生日不合法"/>
+		<item name="industry" type="string" require="true" ref="not_null_check" desc="行业" message="行业不合法"/>	
+		<item name="contact_phone" type="string" require="true" ref="not_null_check" desc="联系电话" message="联系电话不合法">
+			<rule name="匹配">
+				<![CDATA[ \d+ ]]>
+			</rule>
+		</item>	
+		<item name="user_province_code" type="string" require="true" desc="省" message="选择省不合法" >
+			<rule name="最大长度" value="32" />
+			<rule name="最小长度" value="1"/>
+		</item>	
+		<item name="user_city_code" type="string" require="true" desc="市" message="选择市不合法">
+			<rule name="最大长度" value="32" />
+			<rule name="最小长度" value="1"/>
+		</item>
+		<item name="user_area_code" type="string" require="true" desc="县区" message="选择县区不合法">
+			<rule name="最大长度" value="32" />
+		<rule name="最小长度" value="1"/>
+		</item>
+		<item name="user_addr" type="string" require="true" desc="地址" message="地址不合法">
+			<rule name="最大长度" value="40" />
+			<rule name="最小长度" value="1"/>
+		</item>	
+		<item name="email" type="string" require="true" ref="not_null_check" desc="邮箱地址" message="邮箱地址不合法">
+			<rule name="匹配">
+				<![CDATA[ 
+					^([a-z0-9A-Z]+[-|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)+[a-zA-Z]{2,}$
+				]]>
+			</rule>
+		</item>
+	</ruleGroup>
+	
+	
+	<!-- 个人实名认证 -->
+	<ruleGroup id="insert_v_cert" desc="个人用户信息实名认证" message="个人用户信息实名认证错误">
+		<item name="cert_type" type="int" require="true"  desc="认证类型"  message="认证类型不合法">
+			<rule name="最大值" value="4"/>
+			<rule name="最小值" value="1"/>
+		</item>
+		<item name="cert_name" type="String" require="true" ref="not_null_check" desc="真实姓名" message="真实姓名不合法"/>
+		<item name="cert_number" type="String" require="true" ref="not_null_check" desc="证件号码" message="证件号码不合法">
+			<rule name="匹配">
+				<![CDATA[ 
+				^(\\d{6})()?(\\d{4})(\\d{2})(\\d{2})(\\d{3})(\\w)$
+				]]>
+			</rule>
+		</item>
+	</ruleGroup>
+	
+	<!-- 公司实名认证 -->
+	<ruleGroup id="insert_v_cert2" desc="企业信息实名认证" message="企业信息实名认证错误">
+		<item name="cert_type" type="int" require="true"  desc="认证类型"  message="认证类型不合法">
+			<rule name="最大值" value="4"/>
+			<rule name="最小值" value="1"/>
+		</item>
+		<item name="cert_name" type="String" require="true" ref="not_null_check" desc="公司名称" message="公司名称不合法"/>
+		<item name="cert_number" type="String" require="true" ref="not_null_check" desc="营业证号" message="营业证号不合法"/>
+		<item name="co_phone" type="string" require="true" ref="not_null_check" desc="公司电话" message="公司电话不合法">
+			<rule name="匹配">
+				<![CDATA[ \d+ ]]>
+			</rule>
+		</item>
+		<item name="co_leal_person" type="String" require="true" ref="not_null_check" desc="法定代表人" message="法定代表人不合法"/>
+		<item name="co_contact_name" type="String" require="true" ref="not_null_check" desc="联系人姓名" message="联系人姓名不合法"/>
+		<item name="co_contact_phone" type="string" require="true" ref="not_null_check" desc="联系人电话" message="联系人电话不合法">
+			<rule name="匹配">
+				<![CDATA[ \d+ ]]>
+			</rule>
+		</item>
+		<item name="co_web" type="string" require="false" ref="not_null_check" desc="公司网址" message="公司网址不合法">
+			<rule name="匹配"><![CDATA[^http://([\\w-]+\\.)+[\\w-]+(/[\\w-\\./?%&=]*)?$]]></rule>
+		</item>
+		<item name="co_email" type="string" require="false" ref="not_null_check" desc="公司邮箱" message="公司邮箱不合法">
+			<rule name="匹配"><![CDATA[ 
+				^([a-z0-9A-Z]+[-|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)+[a-zA-Z]{2,}$
+			]]></rule>
+		</item>
+		<item name="province_code" type="string" require="true" desc="省" message="选择省不合法" >
+			<rule name="最大长度" value="32" />
+			<rule name="最小长度" value="1"/>
+		</item>	
+		<item name="city_code" type="string" require="true" desc="市" message="选择市不合法">
+			<rule name="最大长度" value="32" />
+			<rule name="最小长度" value="1"/>
+		</item>
+		<item name="area_code" type="string" require="true" desc="县区" message="选择县区不合法">
+			<rule name="最大长度" value="32" />
+		<rule name="最小长度" value="1"/>
+		</item>
+		<item name="addr" type="string" require="true" desc="地址" message="地址不合法">
+			<rule name="最大长度" value="40" />
+			<rule name="最小长度" value="1"/>
+		</item>	
+	</ruleGroup>
+
+</validate>

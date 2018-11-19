@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd"
+	ns="rule_employer">
+	<def id="VarChar32">
+		<rule name="区间长度" value="1,32"/>
+	</def>
+	<def id="Min1">
+		<rule name="最小值" value="1"/>
+	</def>
+	<def id="not_null_check">
+		<rule name="最大长度" value="40" />
+		<rule name="最小长度" value="1"/>
+	</def>
+	
+	<def id="data_big_check">
+		<rule name="最大值" value="99" />
+		<rule name="最小值" value="1"/>
+	</def>
+	
+	<def id="big_data_check">
+		<rule name="最大值" value="99999999" />
+		<rule name="最小值" value="1"/>
+	</def>
+	
+	<def id="data_code_check">
+		<rule name="最大值" value="32" />
+		<rule name="最小值" value="1"/>
+	</def>
+	
+	<!-- 创建项目需求 -->
+	<ruleGroup id="create_new_project" desc="创建项目需求信息" message="创建项目需求信息错误">
+		<item name="project_name" type="string" require="true" ref="not_null_check" desc="项目名称"  message="项目名称不合法"/>
+		<item name="project_catg_name" type="string" require="true" ref="not_null_check" desc="项目分类"  message="项目分类不合法"/>
+		<item name="project_cycle" type="int" require="true" ref="data_big_check" desc="项目周期" message="项目周期不合法"/>
+		<item name="cycle_unit" type="string" require="true" ref="not_null_check" desc="周期单位" message="周期单位不合法"/>	
+		<item name="budget_amount" type="int" require="true" ref="big_data_check" desc="预算金额" message="预算金额不合法"/>
+		<item name="budget_type" type="int" require="true" ref="data_big_check" desc="预算金额类型" message="预算金额类型不合法" />
+		<item name="proj_province" type="string" require="true" ref="not_null_check" desc="省" message="选择省不合法" />
+		<item name="proj_city" type="string" require="true" ref="not_null_check" desc="市" message="选择市不合法"/>
+		<item name="proj_area" type="string" require="true" ref="not_null_check" desc="县区" message="选择县区不合法"/>
+		<item name="proj_addr" type="string" require="true" desc="地址" message="地址不合法">
+			<rule name="最大长度" value="40" />
+			<rule name="最小长度" value="1"/>
+		</item>	
+		<item name="project_desc" type="string" require="true" desc="项目描述" message="项目描述不合法">
+			<rule name="最大长度" value="400" />
+			<rule name="最小长度" value="1"/>
+		</item>
+	</ruleGroup>
+	
+	<ruleGroup id="updateTaskP10" desc="任务终验">
+		<item name="through" type="int" require="true" desc="审核验证" message="审核错误">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="project_task_sn" type="string" require="true" desc="任务编号" message="任务编号不合法" ref="VarChar32"/>
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+		<item name="remark" type="string" require="true" desc="申请意见" message="申请意见不合法">
+			<rule name="区间长度" value="1,512"/>
+		</item>
+	</ruleGroup>
+	<ruleGroup id="updateProjectP9" desc="代签约">
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+	</ruleGroup>
+	<ruleGroup id="updateProjectP11" desc="代验项目">
+		<item name="through" type="int" require="true" desc="审核验证" message="审核错误">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+		<item name="remark" type="string" require="true" desc="申请意见" message="申请意见不合法">
+			<rule name="区间长度" value="1,512"/>
+		</item>
+	</ruleGroup>
+	
+	
+	
+	
+
+</validate>

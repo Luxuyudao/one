@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd"
+	ns="provider">
+	
+	<def id="StringSN">
+		<rule name="区间长度" value="4,64"/>
+	</def>
+	<def id="StringSN2">
+		<rule name="区间长度" value="1,32"/>
+	</def>
+	<def id="min">
+		<rule name="最小值" value="0"/>
+	</def>
+	<def id="urlList">
+		<rule name="区间长度" value="1,5"/>
+	</def>
+	
+	<ruleGroup id="insertTaskReport">	
+		<item name="progress" type="int" require="true" desc="任务进度" message="任务进度不合法">
+			<rule name="枚举值" value="0,10,20,30,40,50,60,70,80,90,100"/>
+		</item>
+		<item name="report_desc" type="string" ref="StringSN" require="true" desc="报告描述" message="报告描述不合法"/>		
+		
+	</ruleGroup>
+	
+	<ruleGroup id="insertProjectCase">	
+		<item name="project_case_name" type="string" ref="StringSN" require="true" desc="任务名称" message="任务名称不合法"/>	
+		<item name="project_desc" type="string" ref="StringSN" require="true" desc="任务内容" message="任务内容不合法"/>
+		<item name="participants_num" type="int"  require="true" desc="参与人数" message="参与人数不合法" ref="min"/>
+		<item name="project_cycle" type="int"  require="true" desc="项目周期" message="项目周期不合法" ref="min">
+			<rule name="最大值" value="31"/>
+		</item>
+		<item name="budget_amount" type="int"  require="true" desc="预算金额" message="预算金额不合法" ref="min"/>	
+		<item name="proj_addr" type="string" ref="StringSN" require="true" desc="详细地址" message="详细地址不合法"/>
+		<item name="project_cycle" type="int" require="true" desc="案例周期" message="案例周期不合法" ref="min"/>
+		<item name="cycle_unit" type="string" require="true" desc="案例周期单位" message="案例周期单位不合法" ref="StringSN2"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="案例周期单位名称" message="案例周期单位名称不合法" ref="StringSN2"/>
+		<item name="budget_amount" type="int" require="true" desc="预算金额" message="预算金额不合法" ref="min"/>
+		<item name="participants_num" type="int" require="true" desc="参与人数" message="参与人数不合法" ref="min"/>
+		<item name="proj_province" type="string" require="true" desc="省" message="省名不合法" ref="StringSN2"/>
+		<item name="proj_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="StringSN2"/>
+		<item name="proj_city" type="string" require="true" desc="市" message="市名不合法" ref="StringSN2"/>
+		<item name="proj_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="StringSN2"/>
+		<item name="proj_area" type="string" require="true" desc="区" message="区名不合法" ref="StringSN2"/>
+		<item name="proj_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="StringSN2"/>
+		<item name="urlList1" type="collection" require="true" desc="案例视频" message="案例视频不合法" ref="urlList"/>
+		<item name="urlList2" type="collection" require="true" desc="案例图片" message="案例图片不合法" ref="urlList"/>
+		<item name="urlList3" type="collection" require="true" desc="案例附件" message="案例附件不合法" ref="urlList"/>
+	</ruleGroup>
+	<ruleGroup id="updateTask">	
+		<item name="project_task_sn" type="string" require="true" desc="任务编号" message="任务编号不合法" ref="StringSN2" />
+		<item name="urlList" type="collection" require="true" desc="附件" message="附件不合法" ref="urlList"/>
+	</ruleGroup>
+</validate>

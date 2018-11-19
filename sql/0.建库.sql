@@ -1,0 +1,4 @@
+DROP DATABASE IF EXISTS tvr_db;
+CREATE DATABASE tvr_db CHARACTER SET utf8 COLLATE=utf8_bin;
+
+use tvr_db;

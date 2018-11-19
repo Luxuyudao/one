@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="tvr-finance">
+
+	<!-- F1	账单列表	分页		组合查询-->
+	<sql-service id="getBillListF1" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_bill where 1 = 1 
+            <if test="{bill_title}!='' and {bill_title}!=null">
+                and bill_title LIKE concat('%',#{bill_title},'%')
+            </if>
+            <if test="{user_name}!='' and {user_name}!=null">
+                and (
+                	in_user_name LIKE concat('%',#{user_name},'%') OR
+                	out_user_name LIKE concat('%',#{user_name},'%') OR
+                )
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+		</selectVar>
+		<selectSet resultKey="{bills}">
+			SELECT * from tvr_bill where 1 = 1 
+            <if test="{bill_title}!='' and {bill_title}!=null">
+                and bill_title LIKE concat('%',#{bill_title},'%')
+            </if>
+            <if test="{user_name}!='' and {user_name}!=null">
+                and (
+                	in_user_name LIKE concat('%',#{user_name},'%') OR
+                	out_user_name LIKE concat('%',#{user_name},'%') OR
+                )
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+			ORDER BY bill_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>		
+		<return>
+			<property value="{total}"/>
+			<property value="{bills}"/>
+		</return>
+	</sql-service>
+
+
+	<!-- F2	来往明细	分页		组合查询 -->
+	<sql-service id="getBillListF2" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_fund_details where 1 = 1 
+            <if test="{user_name}!='' and {user_name}!=null">
+                and user_name LIKE concat('%',#{user_name},'%')
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+            <if test="{amount_type}!=null and {amount_type}==1"><![CDATA[
+           		and amount > 0
+            ]]></if>
+             <if test="{amount_type}!=null and {amount_type}==2"><![CDATA[
+           		and amount < 0
+            ]]></if>
+			<if test="{details_type}!=null and {details_type}!=''"><![CDATA[
+           		and details_type = #{details_type}
+            ]]></if>
+		</selectVar>
+		<selectSet resultKey="{fundDetailList}">
+			SELECT * from tvr_fund_details where 1 = 1 
+            <if test="{user_name}!='' and {user_name}!=null">
+                and user_name LIKE concat('%',#{user_name},'%')
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+            <if test="{amount_type}!=null and {amount_type}==1"><![CDATA[
+           		and amount > 0
+            ]]></if>
+             <if test="{amount_type}!=null and {amount_type}==2"><![CDATA[
+           		and amount < 0
+            ]]></if>
+			<if test="{details_type}!=null and {details_type}!=''"><![CDATA[
+           		and details_type = #{details_type}
+            ]]></if>            
+			ORDER BY fund_details_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{fundDetailList}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- F4	获取某项目雇主账单列表			账单列表 -->
+	<selectSet id="getBillListF4" dsKey="readtvr" txRef="tx_01">
+		SELECT * from tvr_bill where project_sn = #{project_sn} AND bill_type = 1
+	</selectSet>
+	
+	<!-- F6	获取某项目专家账单			账单列表 -->
+	<selectSet id="getBillListF6" dsKey="readtvr" txRef="tx_01">
+		SELECT * from tvr_bill where project_sn = #{project_sn} AND bill_type = 2
+	</selectSet>
+	
+	<!-- F8	获取某项目服务商账单列表	 -->
+	<selectSet id="getBillListF8" dsKey="readtvr" txRef="tx_01">
+		SELECT * from tvr_bill where project_sn = #{project_sn} AND bill_type = 3
+	</selectSet>
+	
+	<!-- F12	获取某个账单信息 -->
+	<selectOne id="getBillListF12" dsKey="readtvr" txRef="tx_01">
+		SELECT * from tvr_bill where bill_sn = #{bill_sn}
+	</selectOne>	
+	
+	<!-- F13	雇主的应付账单列表 -->
+	<sql-service id="getBillListF13" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_bill where out_user_id = #{user_id} AND bill_type = 1
+			<if test="{project_sn} !=null and {project_sn} != ''">
+				and project_sn = #{project_sn}
+			</if>
+			<if test="{bill_sn} !=null and {bill_sn} != ''">
+				and bill_sn = #{bill_sn}
+			</if>
+			<if test="{bill_title} !=null and {bill_title} != ''">
+				and bill_title like concat('%',#{bill_title},'%')
+			</if>
+			<if test="{bill_state} !=null and {bill_state} != ''">
+				and bill_state = #{bill_state}
+			</if>
+			<if test="{a_max} !=null and {a_max} != ''">
+				and bill_amount &lt; #{a_max}
+			</if>
+			<if test="{a_min} !=null and {a_min} != ''">
+				and bill_amount &gt; #{a_min}
+			</if>
+		</selectVar>
+		<selectSet resultKey="{bills}">
+			SELECT * from tvr_bill where out_user_id = #{user_id} AND bill_type = 1
+			<if test="{project_sn} !=null and {project_sn} != ''">
+				and project_sn = #{project_sn}
+			</if>
+			<if test="{bill_sn} !=null and {bill_sn} != ''">
+				and bill_sn = #{bill_sn}
+			</if>
+			<if test="{bill_title} !=null and {bill_title} != ''">
+				and bill_title like concat('%',#{bill_title},'%')
+			</if>
+			<if test="{bill_state} !=null and {bill_state} != ''">
+				and bill_state = #{bill_state}
+			</if>
+			<if test="{a_max} !=null and {a_max} != ''">
+				and bill_amount &lt; #{a_max}
+			</if>
+			<if test="{a_min} !=null and {a_min} != ''">
+				and bill_amount &gt; #{a_min}
+			</if>
+			ORDER BY bill_sn DESC 
+			limit #{start}, #{pageSize}			
+		</selectSet>	
+		<return>
+			<property value="{total}"/>
+			<property value="{bills}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- F14	专家的应收账单列表	F15	服务商应收账单列表 -->
+	<sql-service id="getBillListF14" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_bill where in_user_id = #{user_id} AND bill_type = #{bill_type}
+			<if test="{bill_sn} !=null and {bill_sn} != ''">
+				and bill_sn = #{bill_sn}
+			</if>
+			<if test="{bill_title} !=null and {bill_title} != ''">
+				and bill_title like concat('%',#{bill_title},'%')
+			</if>
+			<if test="{bill_state} !=null and {bill_state} != ''">
+				and bill_state = #{bill_state}
+			</if>
+			<if test="{a_max} !=null and {a_max} != ''">
+				and bill_amount &lt; #{a_max}
+			</if>
+			<if test="{a_min} !=null and {a_min} != ''">
+				and bill_amount &gt; #{a_min}
+			</if>
+		</selectVar>
+		<selectSet resultKey="{bills}">
+			SELECT * from tvr_bill where in_user_id = #{user_id} AND bill_type = #{bill_type}
+			<if test="{bill_sn} !=null and {bill_sn} != ''">
+				and bill_sn = #{bill_sn}
+			</if>
+			<if test="{bill_title} !=null and {bill_title} != ''">
+				and bill_title like concat('%',#{bill_title},'%')
+			</if>
+			<if test="{bill_state} !=null and {bill_state} != ''">
+				and bill_state = #{bill_state}
+			</if>
+			<if test="{a_max} !=null and {a_max} != ''">
+				and bill_amount &lt; #{a_max}
+			</if>
+			<if test="{a_min} !=null and {a_min} != ''">
+				and bill_amount &gt; #{a_min}
+			</if>
+			ORDER BY bill_sn DESC 
+			limit #{start}, #{pageSize}			
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{bills}"/>
+		</return>
+	</sql-service>
+	
+	<!-- F5	生成雇主账单 -->
+	<sql-service id="insertBillF5" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{lastBillAmount}">
+			select sum(bill_amount) as bill_amount from tvr_bill where 
+			project_sn = #{project_sn} AND
+			bill_type = 1 AND
+			bill_valid = 1
+		</selectVar>
+		<if test="null == {lastBillAmount}">
+			<setvar key="{lastBillAmount}" value="0"/>
+		</if>
+		<update rowCount="{nCount}"><![CDATA[
+			update tvr_project set update_time = #{update_time|now()} 
+			WHERE 
+				project_sn = #{project_sn} AND
+				project_ctrl_state = 1 AND
+				real_amount >= #{lastBillAmount} + #{bill_amount}
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="账单总金额超出项目总金额"/>
+		
+		<selectVar resultKey="{sn}">
+			SELECT nextval('tvr_bill')
+		</selectVar>	
+		<insert>
+			INSERT INTO tvr_bill (
+				bill_sn, bill_title, bill_amount, in_out, project_sn, project_task_sn,
+				in_user_id,  in_user_name, out_user_id, out_user_name,
+				in_bank_code,  in_account, in_banks, in_branch, in_type,
+				out_bank_code, out_account, out_banks, out_branch, out_type,
+				pay_channels,  bill_type,  bill_state, 
+				plan_time, creater_id, create_time, remark
+			) VALUES (
+				#{sn}, #{bill_title}, #{bill_amount}, #{in_out|1}, #{project_sn}, #{project_task_sn|''}, 
+				#{in_user_id}, #{in_user_name}, #{out_user_id}, #{out_user_name}, 
+				#{in_bank_code|''}, #{in_account|''}, #{in_banks|''}, #{in_branch|''}, #{in_type|0}, 
+				#{out_bank_code|''}, #{out_account|''}, #{out_banks|''}, #{out_branch|''}, #{out_type|0}, 
+				#{pay_channels}, 1, #{bill_state|10}, 
+				#{plan_time}, #{user_id}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+		<return>
+			<property value="{sn}"/>
+		</return>
+	</sql-service>
+	
+	
+	<!-- F7	生成专家账单 -->
+	<sql-service id="insertBillF7" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{lastBillAmount}">
+			select sum(bill_amount) as bill_amount from tvr_bill where 
+			project_sn = #{project_sn} AND
+			bill_type = 2 AND
+			bill_valid = 1
+		</selectVar>
+		<exception test="{lastBillAmount} != null" code="-1" message="专家账单已经存在"/>
+		
+		<if test="null == {lastBillAmount}">
+			<setvar key="{lastBillAmount}" value="0"/>
+		</if>		
+		
+		<update rowCount="{nCount}"><![CDATA[
+			update tvr_project set update_time = #{update_time|now()} 
+			WHERE 
+				project_sn = #{project_sn} AND
+				project_ctrl_state = 1 AND
+				real_amount >= #{lastBillAmount} + #{bill_amount}
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="账单总金额超出项目总金额"/>
+		
+		<selectVar resultKey="{sn}">
+			SELECT nextval('tvr_bill')
+		</selectVar>	
+		<insert>
+			INSERT INTO tvr_bill (
+				bill_sn, bill_title, bill_amount, in_out, project_sn, project_task_sn,
+				in_user_id,  in_user_name, out_user_id, out_user_name,
+				in_bank_code,  in_account, in_banks, in_branch, in_type,
+				out_bank_code, out_account, out_banks, out_branch, out_type,
+				pay_channels,  bill_type,  bill_state, 
+				plan_time, creater_id, create_time, remark
+			) VALUES (
+				#{sn}, #{bill_title}, #{bill_amount}, #{in_out|2}, #{project_sn}, #{project_task_sn|''}, 
+				#{in_user_id}, #{in_user_name}, #{out_user_id}, #{out_user_name}, 
+				#{in_bank_code|''}, #{in_account|''}, #{in_banks|''}, #{in_branch|''}, #{in_type|0}, 
+				#{out_bank_code|''}, #{out_account|''}, #{out_banks|''}, #{out_branch|''}, #{out_type|0}, 
+				#{pay_channels}, 2, #{bill_state|10}, 
+				#{plan_time}, #{user_id}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+		<return>
+			<property value="{sn}"/>
+		</return>
+	</sql-service>	
+	
+	<!-- F16	生成服务商账单 -->
+	<sql-service id="insertBillF16" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{lastBillAmount}">
+			select sum(bill_amount) as bill_amount from tvr_bill where 
+			project_task_sn = #{project_task_sn} AND
+			bill_type = 3 AND
+			bill_valid = 1
+		</selectVar>
+		<exception test="{lastBillAmount} != null" code="-1" message="服务账单已经存在"/>
+		
+		<if test="null == {lastBillAmount}">
+			<setvar key="{lastBillAmount}" value="0"/>
+		</if>		
+		
+		<update rowCount="{nCount}"><![CDATA[
+			update tvr_project set update_time = #{update_time|now()} 
+			WHERE 
+				project_sn = #{project_sn} AND 
+				project_ctrl_state = 1 AND 
+				real_amount >= #{lastBillAmount} + #{bill_amount}
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="账单总金额超出项目总金额"/>
+		
+		<update rowCount="{nCount}">
+			update tvr_project_task set create_bill = 1, update_time = #{update_time|now()} 
+			WHERE
+				project_task_sn = #{project_task_sn} AND
+				task_ctrl_state = 1 AND
+				create_bill = 0
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="任务状态不合法"/>
+		
+		<selectVar resultKey="{sn}">
+			SELECT nextval('tvr_bill')
+		</selectVar>	
+		<insert>
+			INSERT INTO tvr_bill (
+				bill_sn, bill_title, bill_amount, in_out, project_sn, project_task_sn,
+				in_user_id,  in_user_name, out_user_id, out_user_name,
+				in_bank_code,  in_account, in_banks, in_branch, in_type,
+				out_bank_code, out_account, out_banks, out_branch, out_type,
+				pay_channels,  bill_type,  bill_state, 
+				plan_time, creater_id, create_time, remark
+			) VALUES (
+				#{sn}, #{bill_title}, #{bill_amount}, #{in_out|2}, #{project_sn}, #{project_task_sn}, 
+				#{in_user_id}, #{in_user_name}, #{out_user_id}, #{out_user_name}, 
+				#{in_bank_code|''}, #{in_account|''}, #{in_banks|''}, #{in_branch|''}, #{in_type|0}, 
+				#{out_bank_code|''}, #{out_account|''}, #{out_banks|''}, #{out_branch|''}, #{out_type|0}, 
+				#{pay_channels}, 3, #{bill_state|10}, 
+				#{plan_time}, #{user_id}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+		<return>
+			<property value="{sn}"/>
+		</return>
+	</sql-service>	
+	
+	<!-- F9	账单收款：雇主 -->
+	<sql-service id="updateBillF9" dsKey="readtvr" txRef="tx_01">
+		<!-- 跟新账单 -->
+		<update rowCount="{nCount}"><![CDATA[
+			update tvr_bill set 
+				in_account_holder = #{in_account_holder|''}, 
+				in_bank_code = #{in_bank_code|''}, 
+				in_account = #{in_account}, 
+				in_banks = #{in_banks}, 
+				in_branch = #{in_branch|''}, 
+				in_type = #{in_type}, 
+				out_account_holder = #{out_account_holder|''}, 
+				out_bank_code = #{out_bank_code|''}, 
+				out_account = #{out_account}, 
+				out_banks = #{out_banks}, 
+				out_branch = #{out_branch|''}, 
+				out_type = #{out_type}, 
+				pay_channels = #{pay_channels},
+				bill_state = 100, 
+				finish_time = #{update_time|now()}, 
+				update_time = #{update_time|now()}
+			WHERE
+				bill_sn = #{bill_sn} AND
+				bill_valid = 1 AND
+				bill_state < 100 
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="雇主账单更新失败"/>
+		
+		<selectOne resultKey="{bill}">
+			select * from tvr_bill where bill_sn = #{bill_sn}
+		</selectOne>
+		
+		<!-- 插入支付记录 -->
+		<selectVar resultKey="{pay_sn}">
+			SELECT nextval('tvr_bill_pay_record')
+		</selectVar>		
+		<insert>
+			INSERT INTO tvr_bill_pay_record (
+				pay_record_sn, serial_sn, amount,
+				in_user_id, in_user_name, out_user_id, out_user_name,
+				in_account_holder, in_bank_code, in_account, in_banks, in_branch, in_type,
+				out_account_holder, out_bank_code, out_account, out_banks, out_branch, out_type,
+				pay_channels, state, create_time, operator_id
+			) VALUES (
+				#{pay_sn}, #{serial_sn|''}, #{bill.bill_amount}, 
+				#{bill.in_user_id}, #{bill.in_user_name}, #{bill.out_user_id}, #{bill.out_user_name}, 
+				#{in_account_holder|''}, #{in_bank_code|''}, #{in_account|''}, #{in_banks|''}, #{in_branch|''}, #{in_type|0}, 
+				#{out_account_holder|''}, #{out_bank_code|''}, #{out_account|''}, #{out_banks|''}, #{out_branch|''}, #{out_type|0}, 
+				#{pay_channels}, 100, #{create_time|now()}, #{user_id}
+			)		
+		</insert>
+		
+		<!-- 插入入账流水 -->
+		<insert>
+			INSERT INTO tvr_fund_details (
+				pay_record_sn, bill_sn, project_sn, project_task_sn,
+				title, amount, details_type, 
+				user_id, user_name, create_time
+			)  VALUES (
+				#{pay_sn}, #{bill_sn}, #{project_sn}, #{project_task_sn|''}, 
+				#{title_in}, #{bill.bill_amount}, 2, 
+				#{bill.in_user_id}, #{bill.in_user_name}, #{create_time|now()}
+			)
+		</insert>
+		<!-- 插入出账流水 -->
+		<insert>
+			INSERT INTO tvr_fund_details (
+				pay_record_sn, bill_sn, project_sn, project_task_sn,
+				title, amount, details_type, 
+				user_id, user_name, create_time
+			)  VALUES (
+				#{pay_sn}, #{bill_sn}, #{project_sn}, #{project_task_sn|''}, 
+				#{title_out}, -#{bill.bill_amount}, 1, 
+				#{bill.out_user_id}, #{bill.out_user_name}, #{create_time|now()}
+			)
+		</insert>
+
+		<!-- 更新项目 -->
+		<update>
+			update tvr_project set
+				received_amount = received_amount + #{bill.bill_amount}
+			WHERE
+				project_sn = #{project_sn} 
+		</update>
+	</sql-service>
+	
+	<!-- F10	支付账单：专家 -->
+	<sql-service id="updateBillF10" dsKey="readtvr" txRef="tx_01">
+		<!-- 跟新账单 -->
+		<update rowCount="{nCount}"><![CDATA[
+			update tvr_bill set 
+				in_account_holder = #{in_account_holder|''}, 
+				in_bank_code = #{in_bank_code|''}, 
+				in_account = #{in_account}, 
+				in_banks = #{in_banks}, 
+				in_branch = #{in_branch|''}, 
+				in_type = #{in_type}, 
+				out_account_holder = #{out_account_holder|''}, 
+				out_bank_code = #{out_bank_code|''}, 
+				out_account = #{out_account}, 
+				out_banks = #{out_banks}, 
+				out_branch = #{out_branch|''}, 
+				out_type = #{out_type}, 
+				pay_channels = #{pay_channels},
+				bill_state = 100, 
+				finish_time = #{update_time|now()}, 
+				update_time = #{update_time|now()}
+			WHERE
+				bill_sn = #{bill_sn} AND
+				bill_valid = 1 AND
+				bill_state < 100 
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="顾问账单更新失败"/>
+		
+		<selectOne resultKey="{bill}">
+			select * from tvr_bill where bill_sn = #{bill_sn}
+		</selectOne>
+		
+		<!-- 插入支付记录 -->
+		<selectVar resultKey="{pay_sn}">
+			SELECT nextval('tvr_bill_pay_record')
+		</selectVar>		
+		<insert>
+			INSERT INTO tvr_bill_pay_record (
+				pay_record_sn, serial_sn, amount,
+				in_user_id, in_user_name, out_user_id, out_user_name,
+				in_account_holder, in_bank_code, in_account, in_banks, in_branch, in_type,
+				out_account_holder, out_bank_code, out_account, out_banks, out_branch, out_type,
+				pay_channels, state, create_time, operator_id
+			) VALUES (
+				#{pay_sn}, #{serial_sn|''}, #{bill.bill_amount}, 
+				#{bill.in_user_id}, #{bill.in_user_name}, #{bill.out_user_id}, #{bill.out_user_name}, 
+				#{in_account_holder|''}, #{in_bank_code|''}, #{in_account|''}, #{in_banks|''}, #{in_branch|''}, #{in_type|0}, 
+				#{out_account_holder|''}, #{out_bank_code|''}, #{out_account|''}, #{out_banks|''}, #{out_branch|''}, #{out_type|0}, 
+				#{pay_channels}, 100, #{create_time|now()}, #{user_id}
+			)		
+		</insert>
+		
+		<!-- 插入入账流水 -->
+		<insert>
+			INSERT INTO tvr_fund_details (
+				pay_record_sn, bill_sn, project_sn, project_task_sn,
+				title, amount, details_type, 
+				user_id, user_name, create_time
+			)  VALUES (
+				#{pay_sn}, #{bill_sn}, #{project_sn}, #{project_task_sn|''}, 
+				#{title_in}, #{bill.bill_amount}, 4, 
+				#{bill.in_user_id}, #{bill.in_user_name}, #{create_time|now()}
+			)
+		</insert>
+		<!-- 插入出账流水 -->
+		<insert>
+			INSERT INTO tvr_fund_details (
+				pay_record_sn, bill_sn, project_sn, project_task_sn,
+				title, amount, details_type, 
+				user_id, user_name, create_time
+			)  VALUES (
+				#{pay_sn}, #{bill_sn}, #{project_sn}, #{project_task_sn|''}, 
+				#{title_out}, -#{bill.bill_amount}, 3, 
+				#{bill.out_user_id}, #{bill.out_user_name}, #{create_time|now()}
+			)
+		</insert>
+
+		<!-- 更新项目 -->
+		<update>
+			update tvr_project set
+				paid_advi_amount = paid_advi_amount + #{bill.bill_amount}, 
+				paid_amount = paid_amount + #{bill.bill_amount}
+			WHERE
+				project_sn = #{project_sn} 
+		</update>
+	</sql-service>	
+	
+	<!-- F11	支付账单：服务商 -->
+	<sql-service id="updateBillF11" dsKey="readtvr" txRef="tx_01">
+		<!-- 跟新账单 -->
+		<update rowCount="{nCount}"><![CDATA[
+			update tvr_bill set 
+				in_account_holder = #{in_account_holder|''}, 
+				in_bank_code = #{in_bank_code|''}, 
+				in_account = #{in_account}, 
+				in_banks = #{in_banks}, 
+				in_branch = #{in_branch|''}, 
+				in_type = #{in_type}, 
+				out_account_holder = #{out_account_holder|''}, 
+				out_bank_code = #{out_bank_code|''}, 
+				out_account = #{out_account}, 
+				out_banks = #{out_banks}, 
+				out_branch = #{out_branch|''}, 
+				out_type = #{out_type}, 
+				pay_channels = #{pay_channels},
+				bill_state = 100, 
+				finish_time = #{update_time|now()}, 
+				update_time = #{update_time|now()}
+			WHERE
+				bill_sn = #{bill_sn} AND
+				bill_valid = 1 AND
+				bill_state < 100 
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="顾问账单更新失败"/>
+		
+		<selectOne resultKey="{bill}">
+			select * from tvr_bill where bill_sn = #{bill_sn}
+		</selectOne>
+		
+		<!-- 插入支付记录 -->
+		<selectVar resultKey="{pay_sn}">
+			SELECT nextval('tvr_bill_pay_record')
+		</selectVar>		
+		<insert>
+			INSERT INTO tvr_bill_pay_record (
+				pay_record_sn, serial_sn, amount,
+				in_user_id, in_user_name, out_user_id, out_user_name,
+				in_account_holder, in_bank_code, in_account, in_banks, in_branch, in_type,
+				out_account_holder, out_bank_code, out_account, out_banks, out_branch, out_type,
+				pay_channels, state, create_time, operator_id
+			) VALUES (
+				#{pay_sn}, #{serial_sn|''}, #{bill.bill_amount}, 
+				#{bill.in_user_id}, #{bill.in_user_name}, #{bill.out_user_id}, #{bill.out_user_name}, 
+				#{in_account_holder|''}, #{in_bank_code|''}, #{in_account|''}, #{in_banks|''}, #{in_branch|''}, #{in_type|0}, 
+				#{out_account_holder|''}, #{out_bank_code|''}, #{out_account|''}, #{out_banks|''}, #{out_branch|''}, #{out_type|0}, 
+				#{pay_channels}, 100, #{create_time|now()}, #{user_id}
+			)		
+		</insert>
+		
+		<!-- 插入入账流水 -->
+		<insert>
+			INSERT INTO tvr_fund_details (
+				pay_record_sn, bill_sn, project_sn, project_task_sn,
+				title, amount, details_type, 
+				user_id, user_name, create_time
+			)  VALUES (
+				#{pay_sn}, #{bill_sn}, #{project_sn}, #{project_task_sn|''}, 
+				#{title_in}, #{bill.bill_amount}, 6, 
+				#{bill.in_user_id}, #{bill.in_user_name}, #{create_time|now()}
+			)
+		</insert>
+		<!-- 插入出账流水 -->
+		<insert>
+			INSERT INTO tvr_fund_details (
+				pay_record_sn, bill_sn, project_sn, project_task_sn,
+				title, amount, details_type, 
+				user_id, user_name, create_time
+			)  VALUES (
+				#{pay_sn}, #{bill_sn}, #{project_sn}, #{project_task_sn|''}, 
+				#{title_out}, -#{bill.bill_amount}, 5, 
+				#{bill.out_user_id}, #{bill.out_user_name}, #{create_time|now()}
+			)
+		</insert>
+
+		<!-- 更新项目 -->
+		<update>
+			update tvr_project set
+				paid_prov_amount = paid_prov_amount + #{bill.bill_amount}, 
+				paid_amount = paid_amount + #{bill.bill_amount}
+			WHERE
+				project_sn = #{project_sn} 
+		</update>
+	</sql-service>	
+	
+</sqlservices>

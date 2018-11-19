@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+
+	<bean id="login" class="com.taovr.web.user.LoginController" />
+
+	<c url="/userlogin" exec="{login}.userLogin" />
+	<c url="/userexit" exec="{login}.userExit" />
+	<c url="/syslogin" exec="{login}.sysLogin" />
+	<c url="/sysexit" exec="{login}.sysExit" />
+	<c url="/register" exec="{login}.register" />
+</web-controller>

@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="project-operate">
+
+	<!-- P1	发布项目			身份：雇主 -->
+	<sql-service id="insertProject" dsKey="writetvr" txRef="tx_02">
+		<selectVar resultKey="{sn}">
+			SELECT nextval('tvr_project')
+		</selectVar>
+		<!-- 插入项目 -->
+		<insert id="insertProject" >
+			INSERT INTO tvr_project (
+				project_sn, project_name, employer_id, employer_name,
+				adviser_id, adviser_name, project_catg_id, project_catg_name, project_catg_path,
+				project_type, project_cycle, cycle_unit, cycle_unit_name,
+				budget_amount, budget_type, proj_province, proj_province_code,
+				proj_city, proj_city_code, proj_area, proj_area_code, proj_addr,
+				behalf,	behalf_id, create_time, project_desc
+			) VALUES (
+				#{sn}, #{project_name}, #{employer_id}, #{employer_name}, 
+				#{adviser_id|0}, #{adviser_name|''}, #{project_catg_id}, #{project_catg_name}, #{project_catg_path}, 
+				#{project_type|''}, #{project_cycle}, #{cycle_unit}, #{cycle_unit_name}, 
+				#{budget_amount}, #{budget_type}, #{proj_province}, #{proj_province_code}, 
+				#{proj_city}, #{proj_city_code}, #{proj_area}, #{proj_area_code}, 
+				#{proj_addr}, #{behalf|0}, #{behalf_id|0}, #{create_time|now()}, #{project_desc|''}
+			)
+		</insert>
+		<!-- 插入资源 -->
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 1, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<return>
+			<property value="{sn}"/>
+		</return>
+	</sql-service>
+
+	<!-- P9	项目：确认合约			身份：雇主 -->
+	<sql-service id="updateProjectP9" dsKey="writetvr" txRef="tx_02">
+		<update>
+			update tvr_project set 
+				project_state = 40, update_time = #{update_time|now()} 
+			where 
+				project_sn = #{project_sn} AND 
+				project_state = 30
+		</update>
+	</sql-service>
+	
+	<!-- P10	任务：终验			身份：雇主 -->
+	<sql-service id="updateTaskP10" dsKey="writetvr" txRef="tx_02">
+		<if test="{through} == 2">
+			<update>
+				update tvr_project_task set 
+					task_state = 60, 
+					task_notpass_mark = 0,
+					update_time = #{update_time|now()} 
+				where
+					project_task_sn = #{project_task_sn} AND 
+					task_state = 50
+			</update>			
+		</if>
+		<else>
+			<update>
+				update tvr_project_task set 
+					task_state = 40, 
+					task_notpass_mark = 1,
+					update_time = #{update_time|now()} 
+				where
+					project_task_sn = #{project_task_sn} AND 
+					task_state = 50
+			</update>		
+		</else>
+		<insert>
+			insert into tvr_task_accept_apply(
+				project_sn, project_task_sn, user_id, through, create_time, remark
+			) values(
+				#{project_sn}, #{project_task_sn}, #{user_id}, #{through}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+	</sql-service>
+
+	<!-- P11	项目：验收			身份：雇主 -->
+	<sql-service id="updateProjectP11" dsKey="writetvr" txRef="tx_02">
+		<if test="{through} == 2">
+			<update>
+				update tvr_project set 
+					project_state = 70, 
+					project_notpass_mark = 0, 
+					update_time = #{update_time|now()} 
+				where 
+					project_sn = #{project_sn} AND
+					project_state = 60
+			</update>
+		</if>
+		<else>
+			<update>
+				update tvr_project set 
+					project_state = 50, 
+					project_notpass_mark = 1, 
+					update_time = #{update_time|now()} 
+				where 
+					project_sn = #{project_sn} AND
+					project_state = 60
+			</update>			
+		</else>
+		<insert>
+			insert into tvr_project_accept_apply(
+				project_sn, user_id, through, create_time, remark
+			) values(
+				#{project_sn}, #{user_id}, #{through}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+	</sql-service>	
+
+	<!-- P22	任务：认领			* -->
+	<sql-service id="updateTaskP22" dsKey="writetvr" txRef="tx_02">
+		<!-- 更新认领表 -->
+		<update rowCount="{nCount}">
+			update tvr_task_push_record set state = 2 where task_push_id = #{task_push_id} AND state = 1
+		</update>
+		<!-- <setvar key="{suc}" value="0" type="int"/> -->
+		<exception test="{nCount} != 1" code="-1" message="任务认领失败"/>
+		<!-- 更新任务表 -->
+		<update rowCount="{nCount}">
+			update tvr_project_task set 
+				task_state = 30, 
+				providers_id = #{user_id}, 
+				providers_name = #{user_name}, 
+				start_time = #{update_time|now()}, 
+				update_time = #{update_time|now()} 
+			where 
+				project_task_sn = #{project_task_sn} AND
+				task_state = 20
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="任务认领失败"/>
+	</sql-service>
+	
+	<!-- P27	任务：提交 -->
+	<sql-service id="updateTaskP27" dsKey="writetvr" txRef="tx_02">
+		<!-- 更新任务表 -->
+		<update rowCount="{nCount}">
+			update tvr_project_task set 
+				task_state = 40, 
+				task_notpass_mark = 0,
+				update_time = #{update_time|now()} 
+			where project_task_sn = #{project_task_sn} AND task_state = 30
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="任务提交失败"/>
+		<update>
+			UPDATE tvr_resources set state = 0 WHERE sn_id = #{project_task_sn} AND type = 8
+		</update>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{project_task_sn}, 8, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>		
+	</sql-service>	
+	
+	<!-- P29	发布日报 -->
+	<sql-service id="insertTaskReportP29" dsKey="writetvr" txRef="tx_02">
+		<!-- 插入日报 -->
+		<insert incrementKey="{sn}">
+			INSERT INTO tvr_project_task_report(
+				project_sn, project_task_sn, user_id, progress, create_time, report_desc
+			) VALUES(
+				#{project_sn}, #{project_task_sn}, #{user_id}, #{progress}, #{create_time|now()}, #{report_desc}
+			)
+		</insert>
+		<!-- 插入资源 -->
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 6, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<!-- 跟新进度 -->
+		<update rowCount="{nCount}">
+			update tvr_project_task set task_progress = #{progress}, update_time = #{update_time|now()} where project_task_sn = #{project_task_sn}
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="日报添加失败"/>
+	</sql-service>	
+	
+	<!-- P32	提交案例 -->
+	<sql-service id="insertProjectCaseP32" dsKey="writetvr" txRef="tx_02">
+		<selectVar resultKey="{sn}">
+			SELECT nextval('tvr_project_case')
+		</selectVar>	
+		<!-- 插入案例 -->
+		<insert>
+			INSERT INTO tvr_project_case (
+				project_case_sn, project_case_name, project_sn, user_id, user_name, 
+				case_image1, case_image1_url, 
+				project_catg, project_catg_name, project_catg_path, project_type, project_role,
+				project_cycle, cycle_unit, cycle_unit_name, budget_amount,
+				participants_num, proj_province, proj_province_code, proj_city,
+				proj_city_code, proj_area, proj_area_code, proj_addr,
+				create_time, start_time, finish_time, project_desc, case_audit_type
+			) VALUES (
+				#{sn}, #{project_case_name}, #{project_sn|''}, #{user_id}, #{user_name}, 
+				#{case_image1|''}, #{case_image1_url|''}, 
+				#{project_catg}, #{project_catg_name}, #{project_catg_path}, #{project_type}, #{project_role}, 
+				#{project_cycle}, #{cycle_unit}, #{cycle_unit_name}, #{budget_amount}, 
+				#{participants_num}, #{proj_province}, #{proj_province_code}, #{proj_city}, 
+				#{proj_city_code}, #{proj_area}, #{proj_area_code}, #{proj_addr}, 
+				#{create_time|now()}, #{start_time}, #{finish_time}, #{project_desc}, #{case_audit_type|0}
+			)
+		</insert>
+		<!-- 插入资源 -->
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList1}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 3, #{urlList1[i].title}, #{urlList1[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList2}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 4, #{urlList2[i].title}, #{urlList2[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList3}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 5, #{urlList3[i].title}, #{urlList3[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<if test="{case_audit_type} &lt; 30">
+			<selectOne resultKey="{audit}">
+				select * from tvr_user_audit where user_id=#{user_id}
+			</selectOne>
+			<if test="{audit}==null">
+				<insert >
+					INSERT INTO tvr_user_audit(
+						user_id, cert_audit, card_audit, case_audit, user_type, create_time, update_time
+					) VALUES(
+						#{user_id}, #{audit_state|0}, #{card_audit|0}, #{case_audit|10}, #{user_type|0}, #{create_time|now()}, #{update_time|now()}
+					)
+				</insert>
+			</if>
+			<else>
+				<update>
+					update tvr_user_audit set
+						<if test="{audit_state}!='' and {audit_state}!=null">
+			               	case_audit = #{audit_state},
+			            </if>
+			            update_time = #{update_time|now()}
+		        	where
+		           		user_id = #{user_id}
+				</update>
+			</else>
+		</if>
+	</sql-service>
+	
+	<!-- P38	项目：提交合约 -->
+	<sql-service id="updateProjectP38" dsKey="writetvr" txRef="tx_02">
+		<update>
+			UPDATE tvr_project SET 
+				project_catg_id = #{project_catg_id|'0'},
+				project_catg_name = #{project_catg_name|''},
+				project_catg_path = #{project_catg_path|''}, 
+				project_type = #{project_type|'0'},
+				project_cycle = #{project_cycle}, 
+				cycle_unit = #{cycle_unit}, 
+				cycle_unit_name = #{cycle_unit_name}, 
+				real_amount = #{real_amount}, 
+				budget_type = #{budget_type}, 
+				proj_province = #{proj_province}, 
+				proj_province_code = #{proj_province_code}, 
+				proj_city = #{proj_city}, 
+				proj_city_code = #{proj_city_code}, 
+				proj_area = #{proj_area}, 
+				proj_area_code = #{proj_area_code}, 
+				proj_addr = #{proj_addr}, 
+				contract = #{contract}, 
+				contract_url = #{contract_url}, 
+				project_state = 30, 
+				update_time = #{update_time|now()}, 
+				project_desc = #{project_desc}, 
+				proj_plan_start_time = #{proj_plan_start_time}, 
+				proj_plan_end_time = #{proj_plan_end_time} 
+			WHERE
+				project_sn = #{project_sn} AND
+				project_state = 20
+		</update>
+		<!-- 插入资源 -->
+		<update>
+			UPDATE tvr_resources set state = 0 WHERE sn_id = #{project_sn} AND type = 1
+		</update>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{project_sn}, 1, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>		
+	</sql-service>
+	
+	<!-- P40	新增任务 -->
+	<sql-service id="insertTask" dsKey="writetvr" txRef="tx_02">
+		<selectVar resultKey="{sn}">
+			SELECT nextval('tvr_project_task')
+		</selectVar>
+		<!-- 插入任务 -->
+		<insert>
+			INSERT INTO tvr_project_task (
+				project_task_sn, task_name, project_sn, parent_task_sn,
+				task_level, adviser_id, adviser_name, task_type, 
+				task_cycle, cycle_unit, cycle_unit_name, proposed_amount,
+				real_amount, reward_type, task_province, task_province_code,
+				task_city, task_city_code, task_area, task_area_code,
+				task_addr, task_state, create_time, task_desc,
+				task_behalf, task_behalf_id
+			) VALUES (
+				#{sn}, #{task_name}, #{project_sn}, #{parent_task_sn|''}, 
+				#{task_level}, #{adviser_id}, #{adviser_name}, #{task_type}, 
+				#{task_cycle}, #{cycle_unit}, #{cycle_unit_name}, #{proposed_amount}, 
+				#{real_amount}, #{reward_type}, #{task_province}, #{task_province_code}, 
+				#{task_city}, #{task_city_code}, #{task_area}, #{task_area_code}, 
+				#{task_addr}, #{task_state|10}, #{create_time|now()}, #{task_desc},
+				#{task_behalf|0}, #{task_behalf_id|0}
+			)
+		</insert>
+		<!-- 插入资源 -->
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 2, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<!-- 插入推送记录 -->
+		<insert>
+			INSERT INTO tvr_task_push_record (
+				project_sn, project_task_sn, state, create_time, providers
+			) VALUES(
+				#{project_sn}, #{sn}, #{state|0}, #{create_time|now()}, #{providers}
+			)
+		</insert>
+		<return>
+			<property value="{sn}"/>
+		</return>
+	</sql-service>	
+	
+	<!-- P45	任务终止 -->
+	<sql-service id="updateTaskP45" dsKey="writetvr" txRef="tx_02">
+		<update>
+			update tvr_project_task set 
+				task_ctrl_state = 3, 
+				update_time = #{update_time|now()},
+				termination_time = #{termination_time|now()}, 
+				termination_desc = #{termination_desc|''}
+			where 
+				project_task_sn = #{project_task_sn} AND 
+				task_ctrl_state = 1 
+		</update>
+	</sql-service>	
+	
+	<!-- P46	任务验收 -->
+	<sql-service id="updateTaskP46" dsKey="writetvr" txRef="tx_02">
+		<if test="{through} == 2">
+			<update>
+				update tvr_project_task set 
+					task_state = 50, 
+					task_notpass_mark = 0,
+					update_time = #{update_time|now()} 
+				where 
+					project_task_sn = #{project_task_sn} AND 
+					task_state = 40
+			</update>			
+		</if>
+		<else>
+			<update>
+				update tvr_project_task set 
+					task_state = 30, 
+					task_notpass_mark = 1,
+					update_time = #{update_time|now()} 
+				where 
+					project_task_sn = #{project_task_sn} AND 
+					task_state = 40
+			</update>			
+		</else>
+		<insert>
+			insert into tvr_task_accept_apply(
+				project_sn, project_task_sn, user_id, through, create_time, remark
+			) values(
+				#{project_sn}, #{project_task_sn}, #{user_id}, #{through}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+	</sql-service>	
+	
+	<!-- P48	提交项目 -->
+	<sql-service id="updateProjectP48" dsKey="writetvr" txRef="tx_02">
+		<!-- 更新任务表 -->
+		<update rowCount="{nCount}">
+			update tvr_project set 
+				project_state = 60, 
+				project_notpass_mark = 0, 
+				update_time = #{update_time|now()} 
+			where 
+				project_sn = #{project_sn} AND 
+				project_state = 50 AND 
+				project_ctrl_state = 1
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="项目提交失败"/>
+		<update>
+			UPDATE tvr_resources set state = 0 WHERE sn_id = #{project_sn} AND type = 9
+		</update>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{project_sn}, 9, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+	</sql-service>		
+	
+	<!-- F65	项目审核（指派专家） -->
+	<sql-service id="updateProjectF65" dsKey="writetvr" txRef="tx_02">
+		<if test="{through} == 2">
+			<update rowCount="{nCount}">
+				update tvr_project set 
+					project_state = 20,
+					adviser_id = #{adviser_id}, 
+					adviser_name = #{adviser_name}, 
+					update_time = #{update_time|now()} 
+				where 
+					project_sn =  #{project_sn} AND 
+					project_ctrl_state = 1 AND 
+					project_state = 10 
+			</update>
+			<exception test="{nCount} != 1" code="-1" message="项目审核（指派专家）失败"/>
+		</if>
+		<else>
+			<update rowCount="{nCount}">
+				update tvr_project set
+					project_ctrl_state = 2, 
+					update_time = #{update_time|now()}
+				where 
+					project_sn =  #{project_sn} AND 
+					project_ctrl_state = 1 
+			</update>		
+		</else>
+		<insert>
+			insert into tvr_project_audit_record(
+				project_sn, auditor_id, auditor_name, through, create_time, remark
+			) values(
+				#{project_sn}, #{user_id}, #{user_name}, #{through}, #{create_time|now()}, #{remark}
+			)
+		</insert>		
+	</sql-service>
+
+	<!-- P63	审核任务 -->
+	<sql-service id="updateTaskF63" dsKey="writetvr" txRef="tx_02">
+		<if test="{through} == 2">
+			<update rowCount="{nCount}">
+				update tvr_project_task set
+					task_state = 20, 
+					task_notpass_mark = 0, 
+					update_time = #{update_time|now()}
+				where 
+					project_task_sn = #{project_task_sn} AND
+					task_ctrl_state = 1 AND
+					task_state = 10
+			</update>
+			<exception test="{nCount} != 1" code="-1" message="审核任务失败"/>
+			<update rowCount="{nCount}">
+				update tvr_task_push_record set
+					state = 1, 
+					update_time = #{update_time|now()}
+				where
+					state = 0 AND
+					project_task_sn = #{project_task_sn}
+			</update>
+			<exception test="{nCount} != 1" code="-1" message="审核任务失败2"/>
+		</if>
+		<else>
+			<!-- 
+			<update rowCount="{nCount}">
+				update tvr_project_task set
+					task_ctrl_state = 2, 
+					update_time = #{update_time|now()}
+				where 
+					project_task_sn = #{project_task_sn} AND
+					task_ctrl_state = 1
+			</update> -->
+			<update rowCount="{nCount}">
+				update tvr_project_task set
+					task_notpass_mark = 1, 
+					update_time = #{update_time|now()}
+				where 
+					project_task_sn = #{project_task_sn} AND 
+					task_ctrl_state = 1 AND 
+					task_state = 10
+			</update>			
+		</else>
+		<insert>
+			insert into tvr_project_task_audit_record(
+				project_task_sn, auditor_id, auditor_name, through, create_time, remark
+			) values(
+				#{project_task_sn}, #{user_id}, #{user_name}, #{through}, #{create_time|now()}, #{remark}
+			)
+		</insert>		
+	</sql-service>
+	
+	<!-- P67	案例审核 -->
+	<sql-service id="updateProjectCaseP11" dsKey="writetvr" txRef="tx_02">
+		<if test="{through} == 2">
+			<update rowCount="{nCount}"><![CDATA[
+				update tvr_project_case set 
+					case_audit_state = 100, 
+					update_time = #{update_time|now()} 
+				where 
+					project_case_sn = #{project_case_sn} AND
+					case_audit_state < 100
+			]]></update>
+			<exception test="{nCount} != 1" code="-1" message="案例审核失败1"/>
+		</if>
+		<else>
+			<update rowCount="{nCount}"><![CDATA[
+				update tvr_project_case set 
+					case_audit_state = 30, 
+					update_time = #{update_time|now()} 
+				where 
+					project_case_sn = #{project_case_sn} AND
+					case_audit_state < 30
+			]]></update>
+			<exception test="{nCount} != 1" code="-1" message="案例审核失败2"/>
+		</else>
+		<insert>
+			insert into tvr_project_case_audit_record(
+				project_case_sn, auditor_id, auditor_name, through, create_time, remark
+			) values(
+				#{project_case_sn}, #{user_id}, #{user_name}, #{through}, #{create_time|now()}, #{remark}
+			)
+		</insert>
+		<!-- 
+		<selectOne resultKey="{audit}">
+			select * from  where user_id = #{uid}
+		</selectOne>
+		 -->
+		<if test="{case_d_type} &lt; 30">
+			<update>
+				update tvr_user_audit set
+					<if test="{audit_state}!='' and {audit_state}!=null">
+		               	case_audit = #{audit_state},
+		            </if>
+		            update_time = #{update_time|now()}
+	        	where
+	           		user_id = #{uid}
+			</update>
+		</if>	
+		
+	</sql-service>		
+
+	<!-- P68	财务确认 -->
+	<sql-service id="updateProjectP68" dsKey="writetvr" txRef="tx_02">
+		<update rowCount="{nCount}">
+			update tvr_project set 
+				project_state = 50,
+				update_time = #{update_time|now()} 
+			where 
+				project_sn =  #{project_sn} AND 
+				project_ctrl_state = 1 AND 
+				project_state = 40 
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="财务确认失败"/>
+	</sql-service>	
+	
+	<!-- p69	修改任务 -->
+	<sql-service id="updateProjectTaskP69" dsKey="writetvr" txRef="tx_02">
+		<update rowCount="{nCount}"><![CDATA[
+			UPDATE tvr_project_task SET 
+				task_name = #{task_name}, 
+				task_type = #{task_type}, 
+				task_cycle = #{task_cycle}, 
+				cycle_unit = #{cycle_unit}, 
+				cycle_unit_name = #{cycle_unit_name}, 
+				proposed_amount = #{proposed_amount}, 
+				real_amount = #{real_amount}, 
+				reward_type = #{reward_type}, 
+				task_province = #{task_province}, 
+				task_province_code = #{task_province_code}, 
+				task_city = #{task_city}, 
+				task_city_code = #{task_city_code}, 
+				task_area = #{task_area}, 
+				task_area_code = #{task_area_code}, 
+				task_addr = #{task_addr}, 
+				task_desc=#{task_desc},
+				task_notpass_mark = 0, 
+		]]>
+		<if test="{task_plan_start_time}!='' and {task_plan_start_time}!=null">
+				task_plan_start_time = #{task_plan_start_time}, 
+		</if>
+		<if test="{task_plan_end_time}!='' and {task_plan_end_time}!=null">
+				task_plan_end_time = #{task_plan_end_time}, 
+		</if>
+		<![CDATA[
+				update_time = #{update_time|now()}
+			WHERE
+				project_task_sn = #{project_task_sn} AND
+				task_ctrl_state = 1 AND
+				task_state < 20
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="修改任务失败"/>
+		
+		<!-- 修改和新插入资源 -->
+		<update>
+			UPDATE tvr_resources set state = 0 WHERE sn_id = #{project_task_sn} AND type = 2
+		</update>		
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{project_task_sn}, 2, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>		
+		
+		<!-- 更新推送内容 -->
+		<update>
+			UPDATE tvr_task_push_record SET 
+				providers = #{providers}, 
+				update_time = #{update_time|now()}
+			WHERE
+				project_task_sn = #{project_task_sn}
+		</update>
+	</sql-service>
+
+	<!-- p55	修改案例 -->
+	<sql-service id="updateProjectCaseP55" dsKey="writetvr" txRef="tx_02">
+		<update rowCount="{nCount}"><![CDATA[
+			UPDATE tvr_project_case SET 
+				project_case_name = #{project_case_name}, 
+				case_image1 = #{case_image1}, 
+				case_image1_url = #{case_image1_url}, 
+				project_catg = #{project_catg}, 
+				project_catg_name = #{project_catg_name}, 
+				project_catg_path = #{project_catg_path}, 
+				project_type = #{project_type}, 
+				project_role = #{project_role}, 
+				project_cycle = #{project_cycle}, 
+				cycle_unit = #{cycle_unit}, 
+				cycle_unit_name = #{cycle_unit_name}, 
+				budget_amount = #{budget_amount}, 
+				participants_num = #{participants_num}, 
+				proj_province = #{proj_province}, 
+				proj_province_code = #{proj_province_code}, 
+				proj_city = #{proj_city}, 
+				proj_city_code = #{proj_city_code}, 
+				proj_area = #{proj_area}, 
+				proj_area_code = #{proj_area_code}, 
+				proj_addr = #{proj_addr}, 
+				update_time = #{update_time|now()}, 
+				start_time = #{start_time}, 
+				finish_time = #{finish_time}, 
+				project_desc = #{project_desc}, 
+				case_audit_type = #{case_audit_type}, 
+				case_audit_state = 20
+			WHERE
+				project_case_sn = #{project_case_sn} AND
+				case_audit_state < 100
+		]]></update>
+		<exception test="{nCount} != 1" code="-1" message="修改案例失败"/>
+		
+		<update>
+			UPDATE tvr_resources set state = 0 WHERE sn_id = #{project_case_sn} AND (type = 3 OR type = 4 OR type = 5)
+		</update>
+		
+		<!-- 插入资源 -->
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList1}" index="{i}" open="" close="" separator=",">
+		 		(#{project_case_sn}, 3, #{urlList1[i].title}, #{urlList1[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList2}" index="{i}" open="" close="" separator=",">
+		 		(#{project_case_sn}, 4, #{urlList2[i].title}, #{urlList2[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList3}" index="{i}" open="" close="" separator=",">
+		 		(#{project_case_sn}, 5, #{urlList3[i].title}, #{urlList3[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+		<if test="{case_audit_type} &lt; 30">
+			<update>
+				update tvr_user_audit set
+					<if test="{audit_state}!='' and {audit_state}!=null">
+		               	case_audit = #{audit_state},
+		            </if>
+		            update_time = #{update_time|now()}
+	        	where
+	           		user_id = #{user_id}
+			</update>
+		</if>		
+	</sql-service>
+
+</sqlservices>

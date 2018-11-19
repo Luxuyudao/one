@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd">
+
+	<ruleGroup id="down" desc="文件下载">
+		<item name="id" type="long" require="true" desc="资源ID" message="ID不合法">
+			<rule name="最小值" value="1" />
+		</item>
+	</ruleGroup>
+
+</validate>

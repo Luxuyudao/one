@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 代发项目 -->
+	<c url="/project-operate/insertProject" validate="controller-boss.insertProject"
+		transfer="http://all.demo1.service/project-operate/insertProject">
+		<assembly call="{ipAssembly}.insertProject" order="100"/>
+	</c>
+	<c url="/userService/addProxyUser" transfer="http://all.demo1.service/userService/addProxyUser"></c>
+	<!-- 代签合约 -->
+	<c url="/project-operate/updateProjectP9" validate="operate.updateProjectP9" transfer="http://all.demo1.service/project-operate/updateProjectP9"></c>
+	<!-- 代验项目 -->
+	<c url="/project-operate/updateProjectP11" validate="operate.updateProjectP11" transfer="http://all.demo1.service/project-operate/updateProjectP11"></c>
+	<c url="/tvr-project/getProject4" transfer="http://all.demo1.service/tvr-project/getProject4"></c>
+	<!-- 顾问指派 -->
+	<c url="/tvr-project/getProject2" transfer="http://all.demo1.service/tvr-project/getProject2"></c>
+	<c url="/project-operate/updateProjectF65" transfer="http://all.demo1.service/project-operate/updateProjectF65"></c>
+	<!-- 案例审核 -->
+	<c url="/tvr-project/getMyCase" transfer="http://all.demo1.service/tvr-project/getMyCase"></c>
+	<c url="/tvr-project/getMyCaseListP61" transfer="http://all.demo1.service/tvr-project/getMyCaseListP61"></c>
+	<c url="/project-operate/updateProjectCaseP11" validate="controller-boss.updateProjectCase"
+	transfer="http://all.demo1.service/project-operate/updateProjectCaseP11"></c>
+	<!-- 任务审核 -->
+	<c url="/tvr-project/getProjectTask1" transfer="http://all.demo1.service/tvr-project/getProjectTask1"></c>
+	<c url="/tvr-project/getProjectTask4" transfer="http://all.demo1.service/tvr-project/getProjectTask4"></c>
+	<!-- 任务终验 -->	
+	<c url="/project-operate/updateTaskP10" validate="operate.updateTaskP10" transfer="http://all.demo1.service/project-operate/updateTaskP10"></c>
+	<c url="/tvr-project/getTaskReport" transfer="http://all.demo1.service/tvr-project/getTaskReport"></c>
+	<!-- 任务审核详情 -->
+	<c url="/tvr-project/getProjectTask2" transfer="http://all.demo1.service/tvr-project/getProjectTask2"></c>
+	
+	<c url="/project-operate/updateTaskF63" validate="operate.updateTaskF63" transfer="http://all.demo1.service/project-operate/updateTaskF63"></c>
+	<!-- 账单生成列表 -->
+	<c url="/tvr-project/getTaskListP66" transfer="http://all.demo1.service/tvr-project/getTaskListP66"></c>
+	<!-- 账单生成 -->
+	<c url="/tvr-finance/insertBillF16" transfer="http://all.demo1.service/tvr-finance/insertBillF16"></c>
+	
+	
+	<!-- 行业分类 列表展示-->
+	<c url="/tvr-system/industrylist"  transfer="http://all.demo1.service/tvr-system/industrylist" />
+</web-controller>

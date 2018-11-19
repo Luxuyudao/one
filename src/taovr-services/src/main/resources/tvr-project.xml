@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="tvr-project">
+
+	<!-- P3	查看项目信息1			基本信息 -->
+	<selectOne id="getProject1" dsKey="readtvr">
+		select * from tvr_project where project_sn = #{project_sn}
+	</selectOne>
+	
+	<!-- P4	查看项目信息2			包括项目信息、项目附件 -->
+	<sql-service id="getProject2" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{project}">
+			select * from tvr_project where project_sn = #{project_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_sn} AND type = 1 AND state = 1
+		</selectSet>
+		<return>
+			<property value="{project}"/>
+			<property value="{resources}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P5	查看项目信息3		包括项目信息、项目附件、子任务列表 -->
+	<sql-service id="getProject3" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{project}">
+			select * from tvr_project where project_sn = #{project_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_sn} AND type = 1 AND state = 1
+		</selectSet>
+		<selectSet resultKey="{tasks}">
+			select * from tvr_project_task where project_sn = #{project_sn} order by project_task_sn
+		</selectSet>
+		<return>
+			<property value="{project}"/>
+			<property value="{resources}"/>
+			<property value="{tasks}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P6	查看项目信息4			"包括项目信息、项目附件、子任务列表、审核信息" -->
+	<sql-service id="getProject4" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{project}">
+			select * from tvr_project where project_sn = #{project_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_sn} AND (type = 1 OR type = 9) AND state = 1
+		</selectSet>
+		<selectSet resultKey="{tasks}">
+			select * from tvr_project_task where project_sn = #{project_sn} order by project_task_sn
+		</selectSet>
+		<selectSet resultKey="{applies}">
+			select * from tvr_project_accept_apply where project_sn = #{project_sn} order by paa_id DESC
+		</selectSet>		
+		<return>
+			<property value="{project}"/>
+			<property value="{resources}"/>
+			<property value="{tasks}"/>
+			<property value="{applies}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P13	查看日报总体详情			包括日报信息、附件信息 -->
+	<sql-service id="getTaskReport" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{report}">
+			select * from tvr_project_task_report where task_report_id = #{task_report_id}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{task_report_id} AND type = 6 AND state = 1
+		</selectSet>
+		<return>
+			<property value="{report}"/>
+			<property value="{resources}"/>
+		</return>			
+	</sql-service>
+	
+	<!-- P15	我的项目列表	分页信息		分页，此雇主的 -->
+	<sql-service id="getMyProjectListP15" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project where employer_id = #{user_id}
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>		
+            <if test="{project_name}!='' and {project_name}!=null">
+                and project_name LIKE concat('%',#{project_name},'%')
+            </if>
+			<if test="{adviser_name}!='' and {adviser_name}!=null">
+                and adviser_name LIKE concat('%',#{adviser_name},'%')
+            </if>
+            <if test="{project_state}!='' and {project_state}!=null">
+                and project_state = #{project_state}
+            </if>				
+		</selectVar>	
+		<selectSet resultKey="{projects}">
+			select * from tvr_project where employer_id = #{user_id} 
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>		
+            <if test="{project_name}!='' and {project_name}!=null">
+                and project_name LIKE concat('%',#{project_name},'%')
+            </if>
+			<if test="{adviser_name}!='' and {adviser_name}!=null">
+                and adviser_name LIKE concat('%',#{adviser_name},'%')
+            </if>
+            <if test="{project_state}!='' and {project_state}!=null">
+                and project_state = #{project_state}
+            </if>				
+			ORDER BY project_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{projects}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P19	查询我的任务列表	分页信息		 -->
+	<sql-service id="getMyTaskListP19" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_task where providers_id = #{user_id}
+            <if test="{task_name}!='' and {task_name}!=null">
+                and task_name LIKE concat('%',#{task_name},'%')
+            </if>
+            <if test="{adviser_name}!='' and {adviser_name}!=null">
+                and adviser_name LIKE concat('%',#{adviser_name},'%')
+            </if> 
+			<if test="{project_task_sn}!='' and {project_task_sn}!=null">
+                and project_task_sn = #{project_task_sn}
+            </if>
+            <if test="{task_state}!='' and {task_state}!=null"><![CDATA[
+           		and task_state = #{task_state}
+            ]]></if>
+            <if test="{task_states}!='' and {task_states}!=null">
+                and task_states in (${task_states})
+            </if>
+		</selectVar>	
+		<selectSet resultKey="{tasks}">
+			select * from tvr_project_task where providers_id = #{user_id} 
+            <if test="{task_name}!='' and {task_name}!=null">
+                and task_name LIKE concat('%',#{task_name},'%') 
+            </if>
+            <if test="{adviser_name}!='' and {adviser_name}!=null">
+                and adviser_name LIKE concat('%',#{adviser_name},'%') 
+            </if> 
+			<if test="{project_task_sn}!='' and {project_task_sn}!=null">
+                and project_task_sn = #{project_task_sn} 
+            </if>
+            <if test="{task_state}!='' and {task_state}!=null"><![CDATA[
+           		and task_state = #{task_state} 
+            ]]></if>
+            <if test="{task_states}!='' and {task_states}!=null">
+                and task_states in (${task_states}) 
+            </if>			
+			ORDER BY project_task_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{tasks}"/>
+		</return>
+	</sql-service>	
+	
+	<!-- P20	查看可抢任务列表	分页信息 -->
+	<sql-service id="getMyCanGrabTaskListP20" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_task_push_record where state = 1 AND providers LIKE '%${user_id}%'
+		</selectVar>
+		<selectSet resultKey="{tasks}">
+			SELECT s.*, m.task_push_id from tvr_task_push_record m
+			INNER JOIN tvr_project_task s ON m.project_task_sn = s.project_task_sn
+			WHERE m.state = 1 AND m.providers LIKE '%${user_id}%' ORDER BY m.task_push_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{tasks}"/>
+		</return>
+	</sql-service>	
+	
+	<!-- P23	查看任务信息1			基本信息 -->
+	<selectOne id="getProjectTask1" dsKey="readtvr">
+		select * from tvr_project_task where project_task_sn = #{project_task_sn}
+	</selectOne>
+	
+	<!-- P24	查看任务信息2			基本信息，任务附件 -->
+	<sql-service id="getProjectTask2" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{task}">
+			select * from tvr_project_task where project_task_sn = #{project_task_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_task_sn} AND type = 2 AND state = 1
+		</selectSet>		
+		<return>
+			<property value="{task}"/>
+			<property value="{resources}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- P25	查看任务信息3			基本信息，任务附件，审核意见列表 -->
+	<sql-service id="getProjectTask3" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{task}">
+			select * from tvr_project_task where project_task_sn = #{project_task_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_task_sn} AND type = 2 AND state = 1
+		</selectSet>
+		<selectSet resultKey="{applies}">
+			select * from tvr_task_accept_apply where project_task_sn = #{project_task_sn} order by taa_id DESC
+		</selectSet>			
+		<return>
+			<property value="{task}"/>
+			<property value="{resources}"/>
+			<property value="{applies}"/>
+		</return>		
+	</sql-service>	
+	
+	<!-- P26	查看日报列表	分页信息		日报列表 -->
+	<sql-service id="getTaskReports" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_task_report where project_task_sn = #{project_task_sn}
+		</selectVar>
+		<selectSet resultKey="{reports}">
+			select * from tvr_project_task_report where project_task_sn = #{project_task_sn} ORDER BY task_report_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{reports}"/>
+		</return>
+	</sql-service>
+
+	<!-- P12	查看任务总体详情			包括：任务信息、任务附件、日报列表、审核信息 -->
+	<sql-service id="getProjectTask4" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{task}">
+			select * from tvr_project_task where project_task_sn = #{project_task_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_task_sn} AND (type = 2 OR type = 8) AND state = 1
+		</selectSet>
+		<selectSet resultKey="{applies}">
+			select * from tvr_task_accept_apply where project_task_sn = #{project_task_sn} order by taa_id DESC
+		</selectSet>
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_task_report where project_task_sn = #{project_task_sn}
+		</selectVar>
+		<selectSet resultKey="{reports}">
+			select * from tvr_project_task_report where project_task_sn = #{project_task_sn} ORDER BY task_report_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{task}"/>
+			<property value="{resources}"/>
+			<property value="{applies}"/>
+			<property value="{total}"/>
+			<property value="{reports}"/>			
+		</return>		
+	</sql-service>
+	
+	<!-- P30	我的案例列表	分页信息，用户ID	 -->
+	<sql-service id="getMyCaseList" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_case where user_id = #{user_id}
+		</selectVar>
+		<selectSet resultKey="{cases}">
+			SELECT * from tvr_project_case where user_id = #{user_id} ORDER BY project_case_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>		
+		<return>
+			<property value="{total}"/>
+			<property value="{cases}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P31	查看案例信息	 -->
+	<sql-service id="getMyCase" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{case}">
+			SELECT * from tvr_project_case where project_case_sn = #{project_case_sn}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{project_case_sn} AND (type = 3 OR type = 4 OR type = 5) AND state = 1 
+			ORDER BY type, res_id
+		</selectSet>
+		<return>
+			<property value="{case}"/>
+			<property value="{resources}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P36	获取项目列表	分页信息		组合查询 -->
+	<sql-service id="getMyProjectListP36" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project where adviser_id = #{user_id}
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>
+            <if test="{project_name}!='' and {project_name}!=null">
+                and project_name LIKE concat('%',#{project_name},'%')
+            </if>
+			<if test="{employer_name}!='' and {employer_name}!=null">
+                and employer_name LIKE concat('%',#{employer_name},'%')
+            </if>
+            <if test="{project_state}!='' and {project_state}!=null">
+                and project_state = #{project_state}
+            </if>
+		</selectVar>	
+		<selectSet resultKey="{projects}">
+			select * from tvr_project where adviser_id = #{user_id} 
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>
+            <if test="{project_name}!='' and {project_name}!=null">
+                and project_name LIKE concat('%',#{project_name},'%')
+            </if>
+			<if test="{employer_name}!='' and {employer_name}!=null">
+                and employer_name LIKE concat('%',#{employer_name},'%')
+            </if>
+            <if test="{project_state}!='' and {project_state}!=null">
+                and project_state = #{project_state}
+            </if>			
+			ORDER BY project_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{projects}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P39	获取某项目的任务列表	暂不分页 -->
+	<selectSet id="getProjectTaskList" dsKey="readtvr">
+		select * from tvr_project_task where project_sn = #{project_sn} ORDER BY project_task_sn
+	</selectSet>
+	
+	<!-- P60	查询项目列表	分页信息		组合查询 -->
+	<sql-service id="getProjectListP60" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project where 1 = 1 
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>		
+            <if test="{project_name}!='' and {project_name}!=null">
+                and project_name LIKE concat('%',#{project_name},'%')
+            </if>
+			<if test="{employer_name}!='' and {employer_name}!=null">
+                and employer_name LIKE concat('%',#{employer_name},'%')
+            </if>
+			<if test="{adviser_name}!='' and {adviser_name}!=null">
+                and employer_name LIKE concat('%',#{adviser_name},'%')
+            </if>  
+            <if test="{project_state}!='' and {project_state}!=null">
+                and project_state = #{project_state}
+            </if>
+            <if test="{project_states}!='' and {project_states}!=null">
+                and project_state in (${project_states})
+            </if>            
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+            <if test="{start_real_amount}!='' and {start_real_amount}!=null"><![CDATA[
+           		and #{start_real_amount} <= real_amount
+            ]]></if>
+            <if test="{end_real_amount}!='' and {end_real_amount}!=null"><![CDATA[
+           		and #{end_real_amount} >= real_amount
+            ]]></if>
+		</selectVar>	
+		<selectSet resultKey="{projects}">
+			select * from tvr_project where 1 =1 
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>		
+            <if test="{project_name}!='' and {project_name}!=null">
+                and project_name LIKE concat('%',#{project_name},'%')
+            </if>
+			<if test="{employer_name}!='' and {employer_name}!=null">
+                and employer_name LIKE concat('%',#{employer_name},'%')
+            </if>
+			<if test="{adviser_name}!='' and {adviser_name}!=null">
+                and employer_name LIKE concat('%',#{adviser_name},'%')
+            </if>  
+            <if test="{project_state}!='' and {project_state}!=null">
+                and project_state = #{project_state}
+            </if>
+            <if test="{project_states}!='' and {project_states}!=null">
+                and project_state in (${project_states})
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+            <if test="{start_real_amount}!='' and {start_real_amount}!=null"><![CDATA[
+           		and #{start_real_amount} <= real_amount
+            ]]></if>
+            <if test="{end_real_amount}!='' and {end_real_amount}!=null"><![CDATA[
+           		and #{end_real_amount} >= real_amount
+            ]]></if>	
+			ORDER BY project_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{projects}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P42	选择服务商	分页信息 -->
+	<sql-service id="getProviderListP42" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_user m 
+			LEFT JOIN tvr_user_provider s on m.user_id = s.user_id 
+			where 
+				is_providers = 1 AND user_state = 1
+            <if test="{user_name}!='' and {user_name}!=null">
+                and m.nick_name LIKE concat('%',#{user_name},'%')
+            </if>
+            <if test="{industry}!='' and {industry}!=null">
+                and m.industry = #{industry}
+            </if>            				
+		</selectVar>
+		<selectSet resultKey="{users}">
+			SELECT * from tvr_user m 
+			LEFT JOIN tvr_user_provider s on m.user_id = s.user_id 
+			where 
+				is_providers = 1 AND user_state = 1
+            <if test="{user_name}!='' and {user_name}!=null">
+                and m.nick_name LIKE concat('%',#{user_name},'%')
+            </if>
+            <if test="{industry}!='' and {industry}!=null">
+                and m.industry = #{industry}
+            </if>            				
+			ORDER BY m.user_id 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{users}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- P61	案例列表组合查询1	分页信息 -->
+	<sql-service id="getMyCaseListP61" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_case where 1 = 1
+            <if test="{project_case_sn}!='' and {project_case_sn}!=null">
+                and project_case_sn = #{project_case_sn}
+            </if>	
+            <if test="{project_case_name}!='' and {project_case_name}!=null">
+                and project_case_name LIKE concat('%',#{project_case_name},'%')
+            </if>
+            <if test="{user_name}!='' and {user_name}!=null">
+                and user_name LIKE concat('%',#{user_name},'%')
+            </if>
+           <if test="{case_audit_type}!='' and {case_audit_type}!=null">
+                and case_audit_type = #{case_audit_type}
+            </if>
+			<if test="{case_audit_state}!='' and {case_audit_state}!=null">
+			     and case_audit_state = #{case_audit_state}
+			</if>            
+			<if test="{case_audit_states}!='' and {case_audit_states}!=null">
+			     and case_audit_state in (${case_audit_states})
+			</if>           
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>
+		</selectVar>
+		<selectSet resultKey="{cases}">
+			SELECT * from tvr_project_case where 1 = 1
+            <if test="{project_case_sn}!='' and {project_case_sn}!=null">
+                and project_case_sn = #{project_case_sn}
+            </if>	
+            <if test="{project_case_name}!='' and {project_case_name}!=null">
+                and project_case_name LIKE concat('%',#{project_case_name},'%')
+            </if>
+            <if test="{user_name}!='' and {user_name}!=null">
+                and user_name LIKE concat('%',#{user_name},'%')
+            </if>
+           <if test="{case_audit_type}!='' and {case_audit_type}!=null">
+                and case_audit_type = #{case_audit_type}
+            </if>
+			<if test="{case_audit_state}!='' and {case_audit_state}!=null">
+			     and case_audit_state = #{case_audit_state}
+			</if>            
+			<if test="{case_audit_states}!='' and {case_audit_states}!=null">
+			     and case_audit_state in (${case_audit_states})
+			</if>            
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>		
+			ORDER BY project_case_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>		
+		<return>
+			<property value="{total}"/>
+			<property value="{cases}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P62	获取可用顾问列表 -->
+	<sql-service id="getAdvisorListP62" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_user m 
+			LEFT JOIN tvr_user_advisor s on m.user_id = s.user_id 
+			where 
+				is_advisor = 1 AND user_state = 1
+            <if test="{user_name}!='' and {user_name}!=null">
+                and m.nick_name LIKE concat('%',#{user_name},'%')
+            </if>
+		</selectVar>
+		<selectSet resultKey="{users}">
+			SELECT * from tvr_user m 
+			LEFT JOIN tvr_user_advisor s on m.user_id = s.user_id 
+			where 
+				is_advisor = 1 AND user_state = 1
+            <if test="{user_name}!='' and {user_name}!=null">
+                and m.nick_name LIKE concat('%',#{user_name},'%')
+            </if>               				
+			ORDER BY m.user_id 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{users}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- P63	获取可用顾问列表 -->
+	<sql-service id="getAdvisorListP63" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_user m 
+			LEFT JOIN tvr_user_advisor s on m.user_id = s.user_id 
+			where 
+				is_advisor = 1 AND user_state = 1
+		</selectVar>
+		<selectSet resultKey="{users}">
+			SELECT * from tvr_user m 
+			LEFT JOIN tvr_user_advisor s on m.user_id = s.user_id 
+			where 
+				is_advisor = 1 AND user_state = 1
+			ORDER BY m.user_id 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{users}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- P64	获取待审核任务列表 -->
+	<sql-service id="getTaskListP64" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_task 
+			where 1 = 1 
+            <if test="{task_name}!='' and {task_name}!=null">
+                and task_name LIKE concat('%',#{task_name},'%')
+            </if>  			
+			<if test="{project_task_sn}!='' and {project_task_sn}!=null">
+                and project_task_sn = #{project_task_sn}
+            </if>
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>
+            <if test="{task_state}!='' and {task_state}!=null"><![CDATA[
+           		and task_state = #{task_state}
+            ]]></if>
+            <if test="{task_states}!='' and {task_states}!=null"><![CDATA[
+           		and task_state in (${task_states})
+            ]]></if>            
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>          				
+		</selectVar>
+		<selectSet resultKey="{tasks}">
+			SELECT * from tvr_project_task 
+			where 1 = 1 
+            <if test="{task_name}!='' and {task_name}!=null">
+                and task_name LIKE concat('%',#{task_name},'%')
+            </if>  			
+			<if test="{project_task_sn}!='' and {project_task_sn}!=null">
+                and project_task_sn = #{project_task_sn}
+            </if>
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>
+            <if test="{task_state}!='' and {task_state}!=null"><![CDATA[
+           		and task_state = #{task_state}
+            ]]></if>
+            <if test="{task_states}!='' and {task_states}!=null"><![CDATA[
+           		and task_state in (${task_states})
+            ]]></if>             
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>     				
+			ORDER BY project_task_sn DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{tasks}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- P66	账单生成列表	分页信息		组合查询 -->
+	<sql-service id="getTaskListP66" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_project_task 
+			where 
+				task_ctrl_state = 1 AND
+				task_state = 60
+			<if test="{task_name}!='' and {task_name}!=null">
+                and task_name LIKE concat('%',#{task_name},'%')
+            </if>  			
+			<if test="{project_task_sn}!='' and {project_task_sn}!=null">
+                and project_task_sn = #{project_task_sn}
+            </if>
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>      				
+		</selectVar>	
+		<selectSet resultKey="{tasks}">
+			select * from tvr_project_task 
+			where 
+				task_ctrl_state = 1 AND
+				task_state = 60
+			<if test="{task_name}!='' and {task_name}!=null">
+                and task_name LIKE concat('%',#{task_name},'%')
+            </if>  			
+			<if test="{project_task_sn}!='' and {project_task_sn}!=null">
+                and project_task_sn = #{project_task_sn}
+            </if>
+            <if test="{project_sn}!='' and {project_sn}!=null">
+                and project_sn = #{project_sn}
+            </if>
+            <if test="{start_time}!='' and {start_time}!=null"><![CDATA[
+           		and #{start_time} < create_time
+            ]]></if>
+            <if test="{end_time}!='' and {end_time}!=null"><![CDATA[
+           		and #{end_time} > create_time
+            ]]></if>                 								
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{tasks}"/>
+		</return>		
+	</sql-service>
+	
+	<!-- P67	修改	子任务推送记录          服务商名称回显 -->
+	<sql-service id="getIdAndNameBySn" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{providers}">
+			select providers from tvr_task_push_record where project_task_sn = #{project_task_sn}
+		</selectVar>
+		<log message="=========================={providers}"></log>
+		<exception test="{providers}==null" code="18001" message="该任务没有推送服务商"/>
+		<selectSet resultKey="{userlist}">
+			select user_id, nick_name from tvr_user where user_id in (${providers})
+		</selectSet>
+		<return>
+			<property value="{userlist}"/>
+		</return>
+	</sql-service>
+	
+	
+	<!-- P16	雇主首页项目统计 -->
+	<selectSet id="getEmployerProjectStatsP16" dsKey="readtvr" txRef="tx_01">
+		select project_state, count(project_state) as state_count from tvr_project 
+		where 
+			employer_id = #{tokenUser.user_id} AND
+			project_ctrl_state = 1
+		GROUP BY project_state
+	</selectSet>
+	
+	<!-- P18	服务商首页统计信息 -->
+	<sql-service id="getProviderProjectTaskStatsP18" dsKey="readtvr" txRef="tx_01">
+		<selectSet resultKey="{taskStats}">
+			select task_state, count(task_state) as state_count from tvr_project_task 
+			where 
+				providers_id = #{tokenUser.user_id} AND
+				task_ctrl_state = 1
+			GROUP BY task_state
+		</selectSet>
+		<selectVar resultKey="{canGrabCount}">
+			select count(1) from tvr_task_push_record 
+			where
+				state = 1 AND
+				providers LIKE '%${tokenUser.user_id}%'
+		</selectVar>
+		<return>
+			<property value="{taskStats}"/>
+			<property value="{canGrabCount}"/>
+		</return>
+	</sql-service>
+	
+	<!-- P35	顾问首页项目统计 -->
+	<selectSet id="getAdvisorProjectStatsP35" dsKey="readtvr" txRef="tx_01">
+		select project_state, count(project_state) as state_count from tvr_project 
+		where 
+			adviser_id = #{tokenUser.user_id} AND
+			project_ctrl_state = 1
+		GROUP BY project_state
+	</selectSet>
+	
+	<!-- p70	获取一个资源文件信息 -->
+	<selectOne id="getResourcesP70" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_resources where res_id = #{id}
+	</selectOne>
+	
+	<!-- p56	查询案例审核记录 -->
+	<selectSet id="getCaseAuditListP56" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_project_case_audit_record where project_case_sn = #{project_case_sn} 
+		ORDER BY pcar_id DESC
+	</selectSet>
+	
+</sqlservices>

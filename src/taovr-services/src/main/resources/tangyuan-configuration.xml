@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <dataSource id="readtvr" type="DBCP">
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+        <property name="url" value="jdbc:mysql://readtvr.demo1.mysql:3306/tvr_db1?Unicode=true&amp;characterEncoding=utf8"/>
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        
+        <property name="maxActive" value="200"/>  
+        <property name="minIdle" value="5"/>  
+        <property name="maxIdle" value="20"/>  
+        <property name="initialSize" value="30"/>  
+        <property name="logAbandoned" value="true"/>
+        <property name="removeAbandoned"  value="true"/>
+        <property name="removeAbandonedTimeout" value="10"/>  
+        <property name="maxWait" value="1000"/>
+    </dataSource>
+    
+    <dataSource id="writetvr" type="DBCP" isDefault="true">
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+        <property name="url" value="jdbc:mysql://writetvr.demo1.mysql:3306/tvr_db1?Unicode=true&amp;characterEncoding=utf8"/>
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        
+        <property name="maxActive" value="200"/>  
+        <property name="minIdle" value="5"/>  
+        <property name="maxIdle" value="20"/>  
+        <property name="initialSize" value="30"/>  
+        <property name="logAbandoned" value="true"/>  
+        <property name="removeAbandoned"  value="true"/>  
+        <property name="removeAbandonedTimeout" value="10"/>  
+        <property name="maxWait" value="1000"/>
+    </dataSource>
+    
+    <transaction id="tx_01" behavior="required" isolation="default"/>
+    <transaction id="tx_02" behavior="required" isolation="read_uncommitted"/>
+	
+    <setDefaultTransaction type="method">
+        <property name="select*" 	value="tx_01"/>
+        <property name="get*" 		value="tx_01"/>
+        <property name="find*" 		value="tx_01"/>
+        <property name="update*" 	value="tx_02"/>
+        <property name="insert*" 	value="tx_02"/>
+        <property name="delete*" 	value="tx_02"/>
+    </setDefaultTransaction>
+
+    <mapper resource="tangyuan-mapper.xml"/>
+	<plugin resource="tvr-test.xml"/>
+	<plugin resource="tvr-project.xml"/>
+	<plugin resource="tvr-finance.xml"/>
+	<plugin resource="tvr-project-operate.xml"/>
+	<plugin resource="tvr-user.xml"/>
+	<plugin resource="tvr-system.xml"/>
+	<plugin resource="tvr-complaint.xml"/>
+	
+</configuration>

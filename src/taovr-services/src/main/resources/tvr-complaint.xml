@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="tvr-complaint">
+
+	<!-- T1	发起投诉 -->
+	<sql-service id="insertComplaintT1" dsKey="writetvr" txRef="tx_02">
+		<insert>
+			INSERT INTO project_complaint (
+				project_sn, project_name, contact_phone, 
+				sponsor_id, sponsor_name, respondent_id, respondent_name,
+				complaint_type, create_time, remark
+			) VALUES (
+				#{project_sn}, #{project_name}, #{contact_phone}, 
+				#{tokenUser.user_id}, #{tokenUser.user_name}, #{respondent_id}, #{respondent_name}, 
+				#{complaint_type}, #{create_time|now()}, #{remark}
+			) 
+		</insert>
+		<insert>
+			INSERT INTO tvr_resources(
+				sn_id, type, title, url, create_time
+			) VALUES
+		 	<foreach collection="{urlList}" index="{i}" open="" close="" separator=",">
+		 		(#{sn}, 10, #{urlList[i].title}, #{urlList[i].url}, #{create_time|now()})
+			</foreach>
+		</insert>
+	</sql-service>
+
+	<!-- T2	回复投诉 -->
+	<sql-service id="updateComplaintDetailT2" dsKey="writetvr" txRef="tx_02">
+		<update rowCount="{nCount}">
+			update project_complaint set 
+				update_time = #{update_time|now()}
+			where
+				complaint_id = #{complaint_id} AND 
+				state = 10 
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="投诉已关闭, 回复失败"/>
+		<insert>
+			INSERT INTO project_complaint_detail (
+				complaint_id, reply_user_id, user_type,
+				url1, url2, url3, url4, url5,
+				create_time, remark
+			) VALUES (
+				#{complaint_id}, #{user_id}, #{user_type}, 
+				#{url1|''}, #{url2|''}, #{url3|''}, #{url4|''}, #{url5|''}, 
+				#{create_time|now()}, #{remark}
+			)			
+		</insert>
+	</sql-service>
+
+	<!-- T3	发起仲裁 -->
+	<sql-service id="updateComplaintT3" dsKey="writetvr" txRef="tx_02">
+		<update rowCount="{nCount}">
+			update project_complaint set 
+				arbitration = 1, 
+				update_time = #{update_time|now()}
+			where
+				complaint_id = #{complaint_id} AND 
+				arbitration = 0
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="发起仲裁操作失败"/>		
+	</sql-service>
+	
+	<!-- T4	关闭投诉 -->
+	<sql-service id="updateComplaintT4" dsKey="writetvr" txRef="tx_02">
+		<update rowCount="{nCount}">
+			update project_complaint set 
+				state = 100, 
+				update_time = #{update_time|now()}
+			where
+				complaint_id = #{complaint_id} AND 
+				state = 10
+		</update>
+		<exception test="{nCount} != 1" code="-1" message="关闭投诉操作失败"/>
+		<insert>
+			INSERT INTO project_complaint_detail (
+				complaint_id, reply_user_id, user_type,
+				url1, url2, url3, url4, url5,
+				create_time, remark
+			) VALUES (
+				#{complaint_id}, #{user_id}, #{user_type|4}, 
+				#{url1|''}, #{url2|''}, #{url3|''}, #{url4|''}, #{url5|''}, 
+				#{create_time|now()}, #{remark}
+			)			
+		</insert>
+	</sql-service>
+
+	<!-- T5	获取某个投诉详情 -->
+	<sql-service id="getComplaintT5" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{complaint}">
+			select * from project_complaint where complaint_id = #{complaint_id}
+		</selectOne>
+		<selectSet resultKey="{resources}">
+			select * from tvr_resources where sn_id = #{complaint_id} AND type = 10 AND state = 1
+		</selectSet>
+		<selectSet resultKey="{complaintDetails}">
+			select * from project_complaint_detail where complaint_id = #{complaint_id} ORDER BY complaint_detail_id
+		</selectSet>
+		<return>
+			<property value="{complaint}"/>
+			<property value="{resources}"/>
+			<property value="{complaintDetails}"/>
+		</return>
+	</sql-service>
+
+	<!-- T6 雇主的投诉列表 -->
+	<sql-service id="getComplaintT6" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from project_complaint where 
+				sponsor_id = #{tokenUser.user_id}
+			<if test="{complaint_id} != null and {complaint_id} != ''">
+				and complaint_id = #{complaint_id} 
+			</if>
+			<if test="{project_sn} != null and {project_sn} != ''">
+				and project_sn = #{project_sn} 
+			</if>
+			<if test="{project_name} != null and {project_name} != ''">
+				and project_name LIKE concat('%',#{project_name},'%') 
+			</if>
+			<if test="{contact_phone} != null and {contact_phone} != ''">
+				and contact_phone LIKE concat('%',#{contact_phone},'%') 
+			</if>
+			<if test="{start_time} != null AND {start_time}!=''"><![CDATA[
+           		and #{start_time} < create_time 
+            ]]></if>
+			<if test="{end_time} != null AND {end_time} != ''"><![CDATA[
+           		and #{end_time} > create_time 
+            ]]></if>
+		</selectVar>
+		<selectSet resultKey="{complaintList}">
+			SELECT * from project_complaint where 
+				sponsor_id = #{tokenUser.user_id}
+			<if test="{complaint_id} != null and {complaint_id} != ''">
+				and complaint_id = #{complaint_id} 
+			</if>
+			<if test="{project_sn} != null and {project_sn} != ''">
+				and project_sn = #{project_sn} 
+			</if>
+			<if test="{project_name} != null and {project_name} != ''">
+				and project_name LIKE concat('%',#{project_name},'%') 
+			</if>
+			<if test="{contact_phone} != null and {contact_phone} != ''">
+				and contact_phone LIKE concat('%',#{contact_phone},'%') 
+			</if>
+			<if test="{start_time} != null AND {start_time}!=''"><![CDATA[
+           		and #{start_time} < create_time 
+            ]]></if>
+			<if test="{end_time} != null AND {end_time} != ''"><![CDATA[
+           		and #{end_time} > create_time 
+            ]]></if>			
+			ORDER BY complaint_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}" />
+			<property value="{complaintList}" />
+		</return>
+	</sql-service>
+
+	<!-- T7 专家的投诉列表 -->
+	<sql-service id="getComplaintT7" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from project_complaint where 
+				respondent_id = #{tokenUser.user_id}
+			<if test="{complaint_id} != null and {complaint_id} != ''">
+				and complaint_id = #{complaint_id} 
+			</if>
+			<if test="{project_sn} != null and {project_sn} != ''">
+				and project_sn = #{project_sn} 
+			</if>
+			<if test="{project_name} != null and {project_name} != ''">
+				and project_name LIKE concat('%',#{project_name},'%') 
+			</if>
+			<if test="{contact_phone} != null and {contact_phone} != ''">
+				and contact_phone LIKE concat('%',#{contact_phone},'%') 
+			</if>
+			<if test="{start_time} != null AND {start_time}!=''"><![CDATA[
+           		and #{start_time} < create_time 
+            ]]></if>
+			<if test="{end_time} != null AND {end_time} != ''"><![CDATA[
+           		and #{end_time} > create_time 
+            ]]></if>
+		</selectVar>
+		<selectSet resultKey="{complaintList}">
+			SELECT * from project_complaint where 
+				respondent_id = #{tokenUser.user_id}
+			<if test="{complaint_id} != null and {complaint_id} != ''">
+				and complaint_id = #{complaint_id} 
+			</if>
+			<if test="{project_sn} != null and {project_sn} != ''">
+				and project_sn = #{project_sn} 
+			</if>
+			<if test="{project_name} != null and {project_name} != ''">
+				and project_name LIKE concat('%',#{project_name},'%') 
+			</if>
+			<if test="{contact_phone} != null and {contact_phone} != ''">
+				and contact_phone LIKE concat('%',#{contact_phone},'%') 
+			</if>
+			<if test="{start_time} != null AND {start_time}!=''"><![CDATA[
+           		and #{start_time} < create_time 
+            ]]></if>
+			<if test="{end_time} != null AND {end_time} != ''"><![CDATA[
+           		and #{end_time} > create_time 
+            ]]></if>			
+			ORDER BY complaint_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}" />
+			<property value="{complaintList}" />
+		</return>
+	</sql-service>
+
+	<!-- T8 客服的投诉列表 -->
+	<sql-service id="getComplaintT8" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from project_complaint where 1 = 1 
+			<if test="{complaint_id} != null and {complaint_id} != ''">
+				and complaint_id = #{complaint_id} 
+			</if>
+			<if test="{project_sn} != null and {project_sn} != ''">
+				and project_sn = #{project_sn} 
+			</if>
+			<if test="{project_name} != null and {project_name} != ''">
+				and project_name LIKE concat('%',#{project_name},'%') 
+			</if>
+			<if test="{contact_phone} != null and {contact_phone} != ''">
+				and contact_phone LIKE concat('%',#{contact_phone},'%') 
+			</if>
+			<if test="{start_time} != null AND {start_time}!=''"><![CDATA[
+           		and #{start_time} < create_time 
+            ]]></if>
+			<if test="{end_time} != null AND {end_time} != ''"><![CDATA[
+           		and #{end_time} > create_time 
+            ]]></if>
+		</selectVar>
+		<selectSet resultKey="{complaintList}">
+			SELECT * from project_complaint where 1 = 1 
+			<if test="{complaint_id} != null and {complaint_id} != ''">
+				and complaint_id = #{complaint_id} 
+			</if>
+			<if test="{project_sn} != null and {project_sn} != ''">
+				and project_sn = #{project_sn} 
+			</if>
+			<if test="{project_name} != null and {project_name} != ''">
+				and project_name LIKE concat('%',#{project_name},'%') 
+			</if>
+			<if test="{contact_phone} != null and {contact_phone} != ''">
+				and contact_phone LIKE concat('%',#{contact_phone},'%') 
+			</if>
+			<if test="{start_time} != null AND {start_time}!=''"><![CDATA[
+           		and #{start_time} < create_time 
+            ]]></if>
+			<if test="{end_time} != null AND {end_time} != ''"><![CDATA[
+           		and #{end_time} > create_time 
+            ]]></if>
+			ORDER BY complaint_id DESC 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}" />
+			<property value="{complaintList}" />
+		</return>
+	</sql-service>
+
+</sqlservices>

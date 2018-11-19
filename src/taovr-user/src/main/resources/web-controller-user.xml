@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 个人信息 -->
+	<c url="/tvr-user/getUser"  transfer="http://all.demo1.service/tvr-user/getUser" />
+	<c url="/tvr-user/getUser1"  transfer="http://all.demo1.service/tvr-user/getUser1" />
+	<!-- 交易纠纷  项目的基本信息  P3 -->
+	<c url="/tvr-project/getProject1"  transfer="http://all.demo1.service/tvr-project/getProject1" />
+	
+	<!-- 账户设置 修改密码  P3 -->
+	<c url="/user_updatepwd/user_updatepwd"  transfer="http://all.demo1.service/userService/udapteUserPwd" />
+	
+	<!-- 获取县区地市列表 -->
+	<c url="/tvr-system/getAreaList" transfer="http://all.demo1.service/tvr-system/getAreaList" />
+	<!-- 渲染页面下拉列表框 -->
+	<c url="/tvr-system/getdictList" transfer="http://all.demo1.service/tvr-system/getdictList" />
+	
+	<!-- 查询用户审核页面当前用户的审核状态 -->
+	<c url="/tvr-user/userAuditInfo" transfer="http://all.demo1.service/tvr-user/userAuditInfo" />
+	
+	<!-- 行业分类 列表展示-->
+	<c url="/tvr-system/industrylist"  transfer="http://all.demo1.service/tvr-system/industrylist" />
+
+	<!-- 获取当前登录用户的实名认证信息 -->
+	<c url="/tvr-user/myauditinfo" transfer="http://all.demo1.service/tvr-user/getOneCert2" />
+
+	<!-- 用户加盟时 提交总的申请 -->
+	<c url="/tvr-user/updateAllCert" transfer="http://all.demo1.service/tvr-user/updateAllCert" />
+	
+	<!-- 渲染能力标签-->
+	<c url="/tvr-system/renderabilittagslist" transfer="http://all.demo1.service/tvr-system/renderabilittagslist" />
+	
+	<!-- 职业信息 页面 保存提交-->
+	<c url="/tvr-system/insertUserEmploye" transfer="http://all.demo1.service/tvr-system/insertUserEmploye" />
+	
+	<!-- 职业信息 页面 保存修改-->
+	<c url="/tvr-system/updateUserEmploye" transfer="http://all.demo1.service/tvr-system/updateUserEmploye" />
+	
+	<!-- 职业信息 页面 查询单个信息  由当前登录用户user_id-->
+	<c url="/tvr-system/selectUserEmployeById" transfer="http://all.demo1.service/tvr-system/selectUserEmployeById" />
+	
+	<c url="/tvr-system/getprojecttaglist2" transfer="http://all.demo1.service/tvr-system/getprojecttaglist2" />
+	
+	<c url="/tvr-user" exec="{userSwitch}.userSwitch"/>
+	<bean id="userSwitch" class="com.taovr.core.web.PlatformUserSwitch" />
+	<bean id="file" class="com.taovr.core.web.FileController" />
+	<bean id="commonAssembly" class="com.taovr.core.web.CommonAssembly" />
+
+	<bean id="down" class="com.taovr.core.web.DownloadController" />
+	<c url="/down" validate="down" exec="{down}.download"/>
+
+	<!-- 控制器 -->
+	<bean id="usercontroller" class="com.taovr.web.user.UserController" />
+	<c url="/sendSms" exec="{usercontroller}.sendSms" />
+	
+	<assembly call="{commonAssembly}.addUserInfo">
+		<include>/*</include>
+		<exclude>/uploadFile</exclude>
+		<exclude>/uploadImage</exclude>
+		<exclude>/uploadVideo</exclude>
+	</assembly>
+
+	<c url="/uploadFile" exec="{file}.uploadFile" />
+	<c url="/uploadImage" exec="{file}.uploadImage" />
+	<c url="/uploadVideo" exec="{file}.uploadVideo" />
+	
+</web-controller>

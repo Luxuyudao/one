@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd"
+	ns="val-advisor">
+	<def id="VarChar32">
+		<rule name="区间长度" value="1,32"/>
+	</def>
+	<def id="VarChar64">
+		<rule name="区间长度" value="1,64"/>
+	</def>
+	<def id="VarChar128">
+		<rule name="区间长度" value="1,128"/>
+	</def>
+	<def id="desc">
+		<rule name="区间长度" value="10,1024"/>
+	</def>
+	<def id="Min1">
+		<rule name="最小值" value="1"/>
+	</def>
+	<def id="urlList">
+		<rule name="区间长度" value="1,5"/>
+	</def>
+	<ruleGroup id="insertProjectCase" desc="案例提交">
+		<item name="project_case_name" type="string" require="true" desc="案例名称" message="案例名称不合法">
+			<rule name="区间长度" value="4,64"/>
+		</item>
+		<item name="project_sn" type="string" require="false" desc="相关平台项目ID" message="ID不合法" ref="VarChar32"/>
+		<item name="user_id" type="long" require="true" desc="用户ID" message="用户ID缺失" ref="Min1"/>
+		<item name="user_name" type="string" require="true" desc="用户昵称" message="用户昵称缺失" ref="VarChar32"/>
+		<item name="project_catg" type="string" require="true" desc="案例分类ID" message="案例分类ID缺失" ref="VarChar32"/>
+		<item name="project_catg_name" type="string" require="true" desc="案例分类名称" message="案例分类名称不合法" ref="VarChar32"/>
+		<item name="project_catg_path" type="string" require="true" desc="案例ID路径" message="案例ID路径缺失" ref="VarChar128"/>
+		<item name="project_type" type="string" require="true" desc="案例特征" message="案例特征不合法" ref="VarChar32"/>
+		<item name="project_role" type="int" require="true" desc="案例角色" message="项目角色不合法">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="project_cycle" type="int" require="true" desc="案例周期" message="案例周期不合法" ref="Min1"/>
+		<item name="cycle_unit" type="string" require="true" desc="案例周期单位" message="案例周期单位不合法" ref="VarChar32"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="案例周期单位名称" message="案例周期单位名称不合法" ref="VarChar32"/>
+		<item name="budget_amount" type="int" require="true" desc="预算金额" message="预算金额不合法" ref="Min1"/>
+		<item name="participants_num" type="int" require="true" desc="参与人数" message="参与人数不合法" ref="Min1"/>
+		<item name="proj_province" type="string" require="true" desc="省" message="省名不合法" ref="VarChar32"/>
+		<item name="proj_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="VarChar32"/>
+		<item name="proj_city" type="string" require="true" desc="市" message="市名不合法" ref="VarChar32"/>
+		<item name="proj_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="VarChar32"/>
+		<item name="proj_area" type="string" require="true" desc="区" message="区名不合法" ref="VarChar32"/>
+		<item name="proj_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="VarChar32"/>
+		<item name="proj_addr" type="string" require="true" desc="详细地址" message="详细地址不合法" ref="VarChar128"/>
+		<item name="project_desc" type="string" require="true" desc="项目描述" message="项目描述不合法" ref="desc"/>
+		<item name="case_audit_type" type="int" require="false" desc="案例审核类型" message="案例审核类型不合法	">
+			<rule name="枚举值" value="0,10,20,30,40"/>
+		</item>
+		<item name="urlList1" type="collection" require="true" desc="案例视频" message="案例视频不合法" ref="urlList"/>
+		<item name="urlList2" type="collection" require="true" desc="案例图片" message="案例图片不合法" ref="urlList"/>
+		<item name="urlList3" type="collection" require="true" desc="案例附件" message="案例附件不合法" ref="urlList"/>
+		
+	</ruleGroup>
+	
+	<ruleGroup id="updateProjectCaseP55" desc="修改案例">
+		<item name="project_case_name" type="string" require="true" desc="案例名称" message="案例名称不合法">
+			<rule name="区间长度" value="4,64"/>
+		</item>
+		<item name="project_catg" type="string" require="true" desc="案例分类ID" message="案例分类ID缺失" ref="VarChar32"/>
+		<item name="project_catg_name" type="string" require="true" desc="案例分类名称" message="案例分类名称不合法" ref="VarChar32"/>
+		<item name="project_catg_path" type="string" require="true" desc="案例ID路径" message="案例ID路径缺失" ref="VarChar128"/>
+		<item name="project_type" type="string" require="true" desc="案例特征" message="案例特征不合法" ref="VarChar32"/>
+		<item name="project_role" type="int" require="true" desc="案例角色" message="项目角色不合法">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="project_cycle" type="int" require="true" desc="案例周期" message="案例周期不合法" ref="Min1"/>
+		<item name="cycle_unit" type="string" require="true" desc="案例周期单位" message="案例周期单位不合法" ref="VarChar32"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="案例周期单位名称" message="案例周期单位名称不合法" ref="VarChar32"/>
+		<item name="budget_amount" type="int" require="true" desc="预算金额" message="预算金额不合法" ref="Min1"/>
+		<item name="participants_num" type="int" require="true" desc="参与人数" message="参与人数不合法" ref="Min1"/>
+		<item name="proj_province" type="string" require="true" desc="省" message="省名不合法" ref="VarChar32"/>
+		<item name="proj_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="VarChar32"/>
+		<item name="proj_city" type="string" require="true" desc="市" message="市名不合法" ref="VarChar32"/>
+		<item name="proj_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="VarChar32"/>
+		<item name="proj_area" type="string" require="true" desc="区" message="区名不合法" ref="VarChar32"/>
+		<item name="proj_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="VarChar32"/>
+		<item name="proj_addr" type="string" require="true" desc="详细地址" message="详细地址不合法" ref="VarChar128"/>
+		<item name="project_desc" type="string" require="true" desc="项目描述" message="项目描述不合法" ref="desc"/>
+		<item name="case_audit_type" type="int" require="false" desc="案例审核类型" message="案例审核类型不合法	">
+			<rule name="枚举值" value="0,10,20,30,40"/>
+		</item>
+		<item name="urlList1" type="collection" require="true" desc="案例视频" message="案例视频不合法" ref="urlList"/>
+		<item name="urlList2" type="collection" require="true" desc="案例图片" message="案例图片不合法" ref="urlList"/>
+		<item name="urlList3" type="collection" require="true" desc="案例附件" message="案例附件不合法" ref="urlList"/>
+		
+		<item name="project_case_sn" type="string" require="false" desc="案例ID" message="ID不合法" ref="VarChar32"/>
+		
+		<item name="audit_state" type="int" require="true" desc="审核状态" message="审核状态不合法">
+			<rule name="枚举值" value="0,10,20,30,100"/>
+		</item>
+	</ruleGroup>	
+	
+	<ruleGroup id="updateProjectP38" desc="提交合约">
+		<item name="project_catg_id" type="string" require="false" desc="项目分类ID" message="项目分类ID缺失" ref="VarChar32"/>
+		<item name="project_catg_name" type="string" require="false" desc="项目分类名称" message="项目分类名称缺失" ref="VarChar128"/>
+		<item name="project_catg_path" type="string" require="false" desc="项目分类路径" message="项目分类路径缺失" ref="VarChar128"/>
+		<item name="project_type" type="string" require="false" desc="项目特征" message="项目特征缺失" ref="VarChar32"/>
+		<item name="project_cycle" type="int" require="true" desc="项目周期" message="项目周期不合法" ref="Min1"/>
+		<item name="cycle_unit" type="string" require="true" desc="项目周期单位" message="项目周期单位不合法" ref="VarChar32"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="项目周期单位名称" message="项目周期单位名称不合法" ref="VarChar32"/>
+		<item name="real_amount" type="int" require="true" desc="实际金额" message="实际金额不合法" ref="Min1"/>
+		<item name="budget_type" type="int" require="true" desc="预算金额类型" message="预算金额类型不合法">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="proj_province" type="string" require="true" desc="省" message="省名不合法" ref="VarChar32"/>
+		<item name="proj_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="VarChar32"/>
+		<item name="proj_city" type="string" require="true" desc="市" message="市名不合法" ref="VarChar32"/>
+		<item name="proj_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="VarChar32"/>
+		<item name="proj_area" type="string" require="true" desc="区" message="区名不合法" ref="VarChar32"/>
+		<item name="proj_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="VarChar32"/>
+		<item name="proj_addr" type="string" require="true" desc="详细地址" message="详细地址不合法" ref="VarChar128"/>
+		<item name="contract" type="string" require="true" desc="合同文件" message="合同文件不合法" ref="VarChar32"/>
+		<item name="contract_url" type="string" require="true" desc="合同文件" message="合同文件不合法">
+			<rule name="区间长度" value="1,100"/>
+		</item>
+		<item name="project_desc" type="string" require="true" desc="项目描述" message="项目描述不合法" ref="desc"/>
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+		<item name="urlList" type="collection" require="true" desc="项目附件" message="项目附件不合法" ref="urlList"/>
+	</ruleGroup>	
+	
+	<ruleGroup id="updateTaskP46" desc="任务验收">
+		<item name="through" type="int" require="true" desc="审核验证" message="审核错误">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="project_task_sn" type="string" require="true" desc="任务编号" message="任务ID不合法" ref="VarChar32"/>
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目ID不合法" ref="VarChar32"/>
+		<item name="remark" type="string" require="true" desc="申请意见" message="申请意见不合法">
+			<rule name="区间长度" value="1,512"/>
+		</item>
+	</ruleGroup>
+	
+	<ruleGroup id="updateProjectP48" desc="提交项目">
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目ID不合法" ref="VarChar32"/>
+		<item name="urlList" type="collection" require="true" desc="项目验收附件" message="项目验收附件不合法" ref="urlList"/>
+	</ruleGroup>
+	
+	<ruleGroup id="insertTask" desc="新增任务">
+		<item name="task_name" type="string" require="true" desc="任务名称" message="任务名称不合法" ref="VarChar64"/>
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目ID不合法" ref="VarChar32"/>
+		<item name="parent_task_sn" type="string" require="false" desc="父级任务编号" message="父级任务ID不合法" ref="VarChar32"/>
+		<item name="task_level" type="int" require="true" desc="任务层级" message="任务层级不合法" ref="Min1"/>
+		<item name="adviser_id" type="long" require="true" desc="顾问ID" message="顾问ID不合法" ref="Min1"/>
+		<item name="adviser_name" type="string" require="true" desc="顾问名称" message="顾问名称不合法">
+			<rule name="区间长度" value="1,50"/>
+		</item>
+		<item name="task_type" type="string" require="true" desc="任务类型" message="任务类型不合法" ref="VarChar32"/>
+		<item name="task_cycle" type="int" require="true" desc="任务周期" message="任务周期不合法" ref="Min1"/>
+		<item name="cycle_unit" type="string" require="true" desc="任务周期单位" message="任务周期单位不合法" ref="VarChar32"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="任务周期单位名称" message="项任务周期单位名称不合法" ref="VarChar32"/>
+		<item name="proposed_amount" type="int" require="true" desc="预算金额" message="预算金额不合法" ref="Min1"/>
+		<item name="real_amount" type="int" require="true" desc="实际金额" message="实际金额不合法" ref="Min1"/>
+		<item name="reward_type" type="int" require="true" desc="预算金额类型" message="预算金额类型不合法">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="task_province" type="string" require="true" desc="省" message="省名不合法" ref="VarChar32"/>
+		<item name="task_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="VarChar32"/>
+		<item name="task_city" type="string" require="true" desc="市" message="市名不合法" ref="VarChar32"/>
+		<item name="task_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="VarChar32"/>
+		<item name="task_area" type="string" require="true" desc="区" message="区名不合法" ref="VarChar32"/>
+		<item name="task_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="VarChar32"/>
+		<item name="task_addr" type="string" require="true" desc="详细地址" message="详细地址不合法" ref="VarChar128"/>
+		<item name="task_desc" type="string" require="true" desc="任务描述" message="任务描述不合法" ref="desc"/>
+		<item name="providers" type="string" require="true" desc="服务商ID集合" message="服务商ID集合不合法" ref="desc"/>
+		<item name="task_behalf" type="int" require="false" desc="是否代建" message="是否代建不合法">
+			<rule name="枚举值" value="0,1"/>
+		</item>
+		<item name="urlList" type="collection" require="true" desc="任务附件" message="任务附件不合法" ref="urlList"/>
+	</ruleGroup>
+	
+	<ruleGroup id="updateProjectTaskP69" desc="编辑任务">
+		<item name="task_name" type="string" require="true" desc="任务名称" message="任务名称不合法" ref="VarChar64"/>
+		<item name="task_cycle" type="int" require="true" desc="任务周期" message="任务周期不合法" ref="Min1"/>
+		<item name="cycle_unit" type="string" require="true" desc="任务周期单位" message="任务周期单位不合法" ref="VarChar32"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="任务周期单位名称" message="项任务周期单位名称不合法" ref="VarChar32"/>
+		<item name="real_amount" type="int" require="true" desc="实际金额" message="实际金额不合法" ref="Min1"/>
+		<item name="reward_type" type="int" require="true" desc="预算金额类型" message="预算金额类型不合法">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="task_province" type="string" require="true" desc="省" message="省名不合法" ref="VarChar32"/>
+		<item name="task_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="VarChar32"/>
+		<item name="task_city" type="string" require="true" desc="市" message="市名不合法" ref="VarChar32"/>
+		<item name="task_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="VarChar32"/>
+		<item name="task_area" type="string" require="true" desc="区" message="区名不合法" ref="VarChar32"/>
+		<item name="task_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="VarChar32"/>
+		<item name="task_addr" type="string" require="true" desc="详细地址" message="详细地址不合法" ref="VarChar128"/>
+		<item name="task_desc" type="string" require="true" desc="任务描述" message="任务描述不合法" ref="desc"/>
+		<item name="providers" type="string" require="true" desc="服务商ID集合" message="服务商ID集合不合法" ref="desc"/>
+		<item name="urlList" type="collection" require="true" desc="任务附件" message="任务附件不合法" ref="urlList"/>
+		<item name="project_task_sn" type="string" require="true" desc="任务编号" message="任务ID不合法" ref="VarChar32"/>
+	</ruleGroup>
+	
+	<ruleGroup id="updateTaskP45" desc="任务终止">
+		<item name="project_task_sn" type="string" require="true" desc="任务编号" message="任务ID不合法" ref="VarChar32"/>
+		<item name="termination_desc" type="string" require="true" desc="终止原因" message="终止原因不合法" ref="desc"/>
+	</ruleGroup>
+</validate>

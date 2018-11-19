@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webconfig.xsd">
+
+	<domain id="service" base="http://all.demo1.service" />
+
+	<cache id="redisCache" type="redis" resource="redis.basic.properties" />
+
+	<plugin resource="web-controller-boss.xml" />
+	<plugin resource="web-controller-system.xml" />
+	<plugin resource="web-controller-boss-operate.xml" />
+	<plugin resource="web-controller-boss-finance.xml" />
+
+</web-config>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 案例提交 -->
+	<c url="/project-operate/insertProjectCaseP32" validate="provider.insertProjectCase"
+		transfer="http://all.demo1.service/project-operate/insertProjectCaseP32" />
+	<!-- 任务查看 p25 p26 -->
+	<c url="/tvr-project/getProjectTask3" transfer="http://all.demo1.service/tvr-project/getProjectTask3"></c>
+	<c url="/tvr-project/getProjectTask4" transfer="http://all.demo1.service/tvr-project/getProjectTask4"></c>
+	<c url="/tvr-project/getTaskReports" transfer="http://all.demo1.service/tvr-project/getTaskReports"></c>
+	<!-- 发布日报 -->
+	<c url="/project-operate/insertTaskReportP29" validate="provider.insertTaskReport"
+	transfer="http://all.demo1.service/project-operate/insertTaskReportP29"></c>
+	<!-- 任务提交 -->
+	<c url="/tvr-project/getProjectTask2" transfer="http://all.demo1.service/tvr-project/getProjectTask2"></c>
+	<c url="/project-operate/updateTaskP27" validate="provider.updateTask"
+	 transfer="http://all.demo1.service/project-operate/updateTaskP27"></c>
+	<!-- 任务抢单 -->
+	<c url="/project-operate/updateTaskP22" transfer="http://all.demo1.service/project-operate/updateTaskP22">
+		<assembly call="{providerAssembly}.updateTaskP22" />
+	</c>
+</web-controller>

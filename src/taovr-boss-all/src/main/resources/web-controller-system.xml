@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	
+	<!-- 行业分类 列表展示-->
+	<c url="/tvr-system/getindustrylist"  transfer="http://all.demo1.service/tvr-system/getindustrylist" />
+	<!-- 行业分类  获取单个行业对象-->
+	<c url="/tvr-system/getOneIndustry"  transfer="http://all.demo1.service/tvr-system/getOneIndustry" />
+	<!-- 行业分类  保存单个行业对象-->
+	<c url="/tvr-system/insertIndustry"  transfer="http://all.demo1.service/tvr-system/insertIndustry" />
+	<!-- 行业分类  由子对象查询父对象-->
+	<c url="/tvr-system/getOneIndustry2"  transfer="http://all.demo1.service/tvr-system/getOneIndustry2" />
+	<!-- 行业分类  修改单个行业对象-->
+	<c url="/tvr-system/updateIndustry"  transfer="http://all.demo1.service/tvr-system/updateIndustry" />
+	<!-- 行业分类  删除单个行业对象-->
+	<c url="/tvr-system/deleteIndustry"  transfer="http://all.demo1.service/tvr-system/deleteIndustry" />
+	
+	<!-- 任务分类 列表展示-->
+	<c url="/tvr-system/gettasklist"  transfer="http://all.demo1.service/tvr-system/gettasklist" />
+	<!-- 任务分类  获取单个任务对象-->
+	<c url="/tvr-system/getOneTask"  transfer="http://all.demo1.service/tvr-system/getOneTask" />
+	<!-- 任务分类  保存单个任务对象-->
+	<c url="/tvr-system/insertTask"  transfer="http://all.demo1.service/tvr-system/insertTask" />
+	<!-- 任务分类  由子对象查询父对象-->
+	<c url="/tvr-system/getOneTask2"  transfer="http://all.demo1.service/tvr-system/getOneTask2" />
+	<!-- 任务分类  修改单个任务对象-->
+	<c url="/tvr-system/updateTask"  transfer="http://all.demo1.service/tvr-system/updateTask" />
+	<!-- 任务分类  删除单个任务对象-->
+	<c url="/tvr-system/deleteTask"  transfer="http://all.demo1.service/tvr-system/deleteTask" />
+	
+	
+	<!-- 系统用户操作 用户列表展示-->
+	<c url="/tvr-system/getSysUserList"  transfer="http://all.demo1.service/tvr-system/getSysUserList" />
+	<!-- 系统用户操作 初始化密码-->
+	<c url="/tvr-system/initSystemUserPwd"  transfer="http://all.demo1.service/systemService/initSystemUserPwd" />
+	<!-- 系统用户操作 冻结启用用户-->
+	<c url="/tvr-system/updateUserState"  transfer="http://all.demo1.service/tvr-system/initSystemUserPwd" />
+	<!-- 系统用户操作 查询某个人下的角色-->
+	<c url="/tvr-system/findRoleList"  transfer="http://all.demo1.service/tvr-system/findRoleList" />
+	<!-- 系统用户操作 查询所有角色 -->
+	<c url="/tvr-system/findRoleSingle"  transfer="http://all.demo1.service/tvr-system/findRoleSingle" />
+	<!-- 系统用户操作 修改用户 -->
+	<c url="/tvr-system/updateSysUser"  transfer="http://all.demo1.service/tvr-system/updateSysUser" />
+	<!-- 系统用户操作 插入用户 -->
+	<c url="/tvr-system/insertSysUser"  transfer="http://all.demo1.service/systemService/insertSysUser" />
+	<!-- 系统用户操作 删除用户 -->
+	<c url="/tvr-system/deleteSysUser"  transfer="http://all.demo1.service/tvr-system/deleteSysUser" />
+	
+	<!-- 系统用户操作 角色列表展示-->
+	<c url="/tvr-system/getRoleList"  transfer="http://all.demo1.service/tvr-system/getRoleList" />
+	<!-- 系统用户操作 查询单个角色-->
+	<c url="/tvr-system/queryRoleById"  transfer="http://all.demo1.service/tvr-system/queryRoleById" />
+	<!-- 系统用户操作 修改单个角色 -->
+	<c url="/tvr-system/upadteRole"  transfer="http://all.demo1.service/tvr-system/upadteRole" />
+	<!-- 系统用户操作 插入单个角色 -->
+	<c url="/tvr-system/insertRole"  transfer="http://all.demo1.service/tvr-system/insertRole" />
+	<!-- 系统用户操作 删除单个角色 -->
+	<c url="/tvr-system/deleteRole"  transfer="http://all.demo1.service/tvr-system/deleteRole" />
+	<!-- 系统用户操作 角色下挂载权限列表 -->
+	<c url="/tvr-system/findRoleModelList"  transfer="http://all.demo1.service/tvr-system/findRoleModelList" />
+	<!-- 系统用户操作 保存某个角色下的权限 -->
+	<c url="/tvr-system/saveOpt"  transfer="http://all.demo1.service/systemService/saveOpt" />
+	
+	
+	<!-- 模拟前台注册用户注册 -->
+	<c url="/tvr-system/register"  transfer="http://all.demo1.service/userService/registerUser" />
+	
+	<!-- 模拟前台注册用户注册 -->
+	<c url="/tvr-plateform/changepwd"  transfer="http://all.demo1.service/systemService/udapteUserPwd" />
+	
+</web-controller>

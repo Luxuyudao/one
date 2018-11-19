@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 测试 -->
+	<c url="/tvr-test/getXxx" validate="abc.getXxx" transfer="http://all.demo1.service/tvr-test/getXxx" />
+	<!--财务首页  项目的详细信息  分页 P60-->
+	<c url="/tvr-project/getProjectListP60"  transfer="http://all.demo1.service/tvr-project/getProjectListP60" />
+	<!--  雇主账单   P3    生成账单列表   F5-->
+	<c url="/tvr-project/getProject1"  transfer="http://all.demo1.service/tvr-project/getProject1" />
+	<c url="/tvr-finance/insertBillF5" validate="finance.insertBillF5" transfer="http://all.demo1.service/tvr-finance/insertBillF5" />
+	<!--  服务商结算   F8   -->
+	<c url="/tvr-finance/getBillListF8"  transfer="http://all.demo1.service/tvr-finance/getBillListF8" />
+	<!--  账单列表   F1   -->
+	<c url="/tvr-finance/getBillListF1"  transfer="http://all.demo1.service/tvr-finance/getBillListF1" />
+	<!--  往来明细    F2   -->
+	<c url="/tvr-finance/getBillListF2"  transfer="http://all.demo1.service/tvr-finance/getBillListF2" />
+	<!--  雇主确认付款   F12 -->
+	<c url="/tvr-finance/getBillListF12"  transfer="http://all.demo1.service/tvr-finance/getBillListF12" />
+	<!--  生成雇主账单列表   F4 -->
+	<c url="/tvr-finance/getBillListF4"  transfer="http://all.demo1.service/tvr-finance/getBillListF4" />
+	<!-- 客服模块  查询会员列表 -->
+	<c url="/tvr-user/getUserlistu11" transfer="http://all.demo1.service/tvr-user/getUserlistu11"></c>
+	<!-- 客服模块  会员列表  查找单个会员-->
+	<c url="/tvr-user/getUser" transfer="http://all.demo1.service/tvr-user/getUser"></c>
+	<!-- 客服模块  会员列表  冻结停用会员-->
+	<c url="/tvr-user/userStop" transfer="http://all.demo1.service/tvr-user/userStop"></c>
+	<!-- 客服模块  认证审核列表-->
+	<c url="/tvr-user/getUserlistu13" transfer="http://all.demo1.service/tvr-user/getUserlistu13"></c>
+	<!-- 客服模块  认证审核列表  查找单个用户资料-->
+	<c url="/tvr-user/getOneCert" transfer="http://all.demo1.service/tvr-user/getOneCert"></c>
+	<!-- 客服模块  认证审核列表  提交审核-->
+	<c url="/tvr-user/auditCert" validate="controller-boss.audit_user" transfer="http://all.demo1.service/tvr-user/auditCert"></c>
+	<!-- 运营模块  审核案例 P30-->
+	<c url="/tvr-project/getMyCaseList" transfer="http://all.demo1.service/tvr-project/getMyCaseList"></c>
+	<!-- 运营模块  审核任务 P64-->
+	<c url="/tvr-project/getTaskListP64" transfer="http://all.demo1.service/tvr-project/getTaskListP64"></c>
+	<!-- 运营模块  指派顾问 获取顾问列表  P63-->
+	<c url="/tvr-project/getAdvisorListP63" transfer="http://all.demo1.service/tvr-project/getAdvisorListP63"></c>
+	
+	<bean id="file" class="com.taovr.core.web.FileController" />
+	
+	<!-- 获取县区地市列表 -->
+	<c url="/tvr-system/getAreaList" transfer="http://all.demo1.service/tvr-system/getAreaList" />
+	<!-- 渲染页面下拉列表框 -->
+	<c url="/tvr-system/getdictList" transfer="http://all.demo1.service/tvr-system/getdictList" />
+	
+	<!-- 能力标签 列表 -->
+	<c url="/tvr-system/getprojecttaglist" transfer="http://all.demo1.service/tvr-system/getprojecttaglist" />
+	<!-- 能力标签 插入 -->
+	<c url="/tvr-system/insertprojecttag" transfer="http://all.demo1.service/tvr-system/insertprojecttag" />
+	<!-- 能力标签 查询单个能力标签 -->
+	<c url="/tvr-system/queryprojecttagById" transfer="http://all.demo1.service/tvr-system/queryprojecttagById" />
+	<!-- 能力标签 修改能力标签 -->
+	<c url="/tvr-system/updateprojecttag" transfer="http://all.demo1.service/tvr-system/updateprojecttag" />
+	<!-- 能力标签 删除能力标签 -->
+	<c url="/tvr-system/deleteDictprojecttag" transfer="http://all.demo1.service/tvr-system/deleteDictprojecttag" />
+	
+	
+
+	<!-- 运营职业信息审核 获取职业审核列表 -->
+	<c url="/tvr-system/getprofessionlist" transfer="http://all.demo1.service/tvr-system/getprofessionlist" />
+	<!-- 职业信息 页面 审核职业信息-->
+	<c url="/tvr-system/auditProfession" transfer="http://all.demo1.service/tvr-system/auditProfession" />
+	
+	<!-- 职业信息 页面 查询单个信息  由当前登录用户user_id-->
+	<c url="/tvr-system/selectUserEmployeById" transfer="http://all.demo1.service/tvr-system/selectUserEmployeById" />
+	<c url="/tvr-system/getprojecttaglist2" transfer="http://all.demo1.service/tvr-system/getprojecttaglist2" />
+	
+
+	<bean id="down" class="com.taovr.core.web.DownloadController" />
+	<c url="/down" validate="down" exec="{down}.download"/>
+
+	<bean id="commonAssembly" class="com.taovr.core.web.SystemCommonAssembly" />
+	<!-- <bean id="bossAssembly" class="com.taovr.web.boss.BossAssembly" /> -->
+	<bean id="ipAssembly" class="com.taovr.web.boss.InsertProjectAssembly" />
+
+	<assembly call="{commonAssembly}.addUserInfo">
+		<include>/*</include>
+		<exclude>/uploadFile</exclude>
+		<exclude>/uploadImage</exclude>
+		<exclude>/uploadVideo</exclude>
+		<exclude>/tvr-system/getprojecttaglist2</exclude>
+		<exclude>/tvr-system/selectUserEmployeById</exclude>
+		<exclude>/tvr-finance/getBillListF2</exclude>
+		<exclude>/tvr-finance/getBillListF1</exclude>
+		<exclude>/tvr-project/getMyCaseListP61</exclude>
+	</assembly>
+
+	<c url="/uploadFile" exec="{file}.uploadFile" />
+	<c url="/uploadImage" exec="{file}.uploadImage" />
+	<c url="/uploadVideo" exec="{file}.uploadVideo" />
+	
+</web-controller>

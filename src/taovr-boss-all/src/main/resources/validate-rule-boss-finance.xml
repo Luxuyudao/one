@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd"
+	ns="finance">
+	<def id="VarChar32">
+		<rule name="区间长度" value="1,32"/>
+	</def>
+	<def id="VarChar64">
+		<rule name="区间长度" value="1,64"/>
+	</def>
+	<def id="Min1">
+		<rule name="最小值" value="1"/>
+	</def>
+	<def id="desc256">
+		<rule name="区间长度" value="1,256"/>
+	</def>
+	
+	<ruleGroup id="insertBillF7" desc="生产顾问账单">
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+		<item name="bill_title" type="string" require="true" desc="账单标题" message="账单标题不合法" ref="VarChar64"/>
+		<item name="bill_amount" type="long" require="true" desc="账单金额" message="账单金额不合法" ref="Min1"/>
+		<item name="remark" type="string" require="true" desc="备注" message="备注不合法" ref="desc256"/>		
+	</ruleGroup>
+	<ruleGroup id="insertBillF5" desc="生产雇主账单">
+		<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+		<item name="bill_title" type="string" require="true" desc="账单标题" message="账单标题不合法" ref="VarChar64"/>
+		<item name="bill_amount" type="long" require="true" desc="账单金额" message="账单金额不合法" ref="Min1"/>
+		<item name="remark" type="string" require="true" desc="备注" message="备注不合法" ref="desc256"/>		
+	</ruleGroup>
+	<ruleGroup id="updateBillF10" desc="支付账单：专家">
+		
+	 	<item name="in_account_holder" type="string" require="true" desc="收款用户" message="收款用户不合法" ref="VarChar32" />
+	 	<item name="in_account" type="string" require="true" desc="收款帐户" message="收款帐户不合法" ref="VarChar32" />
+	 	<item name="in_banks" type="string" require="true" desc="收款银行" message="收款银行不合法" ref="VarChar32" />
+	 	<item name="in_type" type="int" require="true" desc="收款账号类型" message="收款账号类型不合法">
+	 		<rule name="枚举值" value="1,2,3"/>
+	 	</item>
+	 	<item name="out_account_holder" type="string" require="true" desc="付款用户" message="付款用户不合法" ref="VarChar32" />
+	 	<item name="out_account" type="string" require="true" desc="付款帐户" message="付款帐户不合法" ref="VarChar32" />
+	 	<item name="out_banks" type="string" require="true" desc="付款银行" message="付款银行不合法" ref="VarChar32" />
+	 	<item name="out_type" type="int" require="true" desc="付款账号类型" message="付款账号类型不合法">
+	 		<rule name="枚举值" value="1,2,3"/>
+	 	</item>
+	 	<item name="pay_channels" type="int" require="true" desc="支付渠道类型" message="支付渠道类型不合法">
+	 		<rule name="枚举值" value="1,2"/>
+	 	</item>
+	 	<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+	 	<item name="bill_sn" type="string" require="true" desc="账单编号" message="账单编号不合法" ref="VarChar32"/>
+	</ruleGroup>
+	 <ruleGroup id="updateBillF9" desc="账单收款：雇主 ">
+	 	<item name="in_account_holder" type="string" require="true" desc="收款用户" message="收款用户不合法" ref="VarChar32" />
+	 	<item name="in_account" type="string" require="true" desc="收款帐户" message="收款帐户不合法" ref="VarChar32" />
+	 	<item name="in_banks" type="string" require="true" desc="收款银行" message="收款银行不合法" ref="VarChar32" />
+	 	<item name="in_type" type="int" require="true" desc="收款账号类型" message="收款账号类型不合法">
+	 		<rule name="枚举值" value="1,2,3"/>
+	 	</item>
+	 	<item name="out_account_holder" type="string" require="true" desc="付款用户" message="付款用户不合法" ref="VarChar32" />
+	 	<item name="out_account" type="string" require="true" desc="付款帐户" message="付款帐户不合法" ref="VarChar32" />
+	 	<item name="out_banks" type="string" require="true" desc="付款银行" message="付款银行不合法" ref="VarChar32" />
+	 	<item name="out_type" type="int" require="true" desc="付款账号类型" message="付款账号类型不合法">
+	 		<rule name="枚举值" value="1,2,3"/>
+	 	</item>
+	 	<item name="pay_channels" type="int" require="true" desc="支付渠道类型" message="支付渠道类型不合法">
+	 		<rule name="枚举值" value="1,2"/>
+	 	</item>
+	 	<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+	 	<item name="bill_sn" type="string" require="true" desc="账单编号" message="账单编号不合法" ref="VarChar32"/>
+	 </ruleGroup>
+	 <ruleGroup id="updateBillF11" desc="支付账单：服务商 ">
+	 	<item name="in_account_holder" type="string" require="true" desc="收款用户" message="收款用户不合法" ref="VarChar32" />
+	 	<item name="in_account" type="string" require="true" desc="收款帐户" message="收款帐户不合法" ref="VarChar32" />
+	 	<item name="in_banks" type="string" require="true" desc="收款银行" message="收款银行不合法" ref="VarChar32" />
+	 	<item name="in_type" type="int" require="true" desc="收款账号类型" message="收款账号类型不合法">
+	 		<rule name="枚举值" value="1,2,3"/>
+	 	</item>
+	 	<item name="out_account_holder" type="string" require="true" desc="付款用户" message="付款用户不合法" ref="VarChar32" />
+	 	<item name="out_account" type="string" require="true" desc="付款帐户" message="付款帐户不合法" ref="VarChar32" />
+	 	<item name="out_banks" type="string" require="true" desc="付款银行" message="付款银行不合法" ref="VarChar32" />
+	 	<item name="out_type" type="int" require="true" desc="付款账号类型" message="付款账号类型不合法">
+	 		<rule name="枚举值" value="1,2,3"/>
+	 	</item>
+	 	<item name="pay_channels" type="int" require="true" desc="支付渠道类型" message="支付渠道类型不合法">
+	 		<rule name="枚举值" value="1,2"/>
+	 	</item>
+	 	<item name="project_sn" type="string" require="true" desc="项目编号" message="项目编号不合法" ref="VarChar32"/>
+	 	<item name="bill_sn" type="string" require="true" desc="账单编号" message="账单编号不合法" ref="VarChar32"/>
+	 </ruleGroup>
+</validate>

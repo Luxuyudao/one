@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 顾问账单生成 -->
+	<c url="/tvr-finance/insertBillF7" validate="finance.insertBillF7" transfer="http://all.demo1.service/tvr-finance/insertBillF7"></c>
+	<c url="/tvr-finance/getBillListF6" transfer="http://all.demo1.service/tvr-finance/getBillListF6"></c>
+	<!-- 雇主账单支付 -->
+	<c url="/tvr-finance/updateBillF9" validate="finance.updateBillF9"  transfer="http://all.demo1.service/tvr-finance/updateBillF9"></c>
+	<!-- 专家账单支付 -->
+	<c url="/tvr-finance/updateBillF10" validate="finance.updateBillF10" transfer="http://all.demo1.service/tvr-finance/updateBillF10"></c>
+	<!-- 服务商账单支付 -->
+	<c url="/tvr-finance/updateBillF11" validate="finance.updateBillF11" transfer="http://all.demo1.service/tvr-finance/updateBillF11"></c>
+	<!-- 财务确认 -->
+	<c url="/project-operate/updateProjectP68" transfer="http://all.demo1.service/project-operate/updateProjectP68"></c>
+	
+</web-controller>

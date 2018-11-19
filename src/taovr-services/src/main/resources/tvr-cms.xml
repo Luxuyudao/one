@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="tvr-cms">
+	
+	<!-- C1	插入某组推荐 -->
+	<sql-service id="insertPageRcdC1" dsKey="writetvr" txRef="tx_02">
+		<update>
+			update tvr_page_rcd set 
+				state = 0
+			WHERE
+				type = #{type} AND 
+				state = 1
+		</update>
+		<insert>
+			INSERT INTO tvr_page_rcd (
+				title, url, link, 
+				desc1, desc2, desc3,
+				type, operator_id, create_time
+			) VALUES 
+		 	<foreach collection="{rcds}" index="{i}" open="" close="" separator=",">
+			(
+				#{rcds[i].title|''}, #{rcds[i].url|''}, #{rcds[i].link|''}, 
+				#{rcds[i].desc1|''}, #{rcds[i].desc2|''}, #{rcds[i].desc3|''}, 
+				#{type}, #{tokenUser.user_id}, #{create_time|now()}
+			)		 		
+			</foreach>			
+		</insert>
+	</sql-service>
+	
+	<!-- C2	查询某组推荐 -->
+	<selectSet id="getPageRcdListC2" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_page_rcd 
+		where 
+			state = 1  
+            <if test="{type} != null">
+                and type = #{type}
+            </if>
+            <if test="{types} != null">
+                and type in (${types})
+            </if>
+		ORDER BY
+			type, id
+	</selectSet>
+	
+	<!-- C3	查询某些组的推荐 -->
+	
+</sqlservices>

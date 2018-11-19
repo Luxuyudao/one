@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/validate/rule.xsd"
+	ns="controller-boss">
+	
+	<def id="IntegerChecker">
+		<rule name="最大值" value="10000" />
+	</def>
+	
+	<def id="StringChecker">
+		<rule name="最大长度" value="8" />
+	</def>
+	
+	<def id="mobile">
+		<rule name="匹配">
+			<![CDATA[ \d+ ]]>
+		</rule>
+	</def>
+
+	<ruleGroup id="userInfoChecker" desc="获取用户列表控制器">
+		<item name="age" type="int" require="true" ref="IntegerChecker" desc="用户姓名">
+			<rule name="最小值" value="18" />
+		</item>
+		<item name="age1" type="int" require="false" defaultValue="12" />
+		<item name="name" type="string" ref="StringChecker" message="姓名不合法" />
+	</ruleGroup>
+	<ruleGroup id="getXxx" desc="获取用户列表控制器" message="姓名不合法" >
+		<item name="id" type="int" require="true" desc="用户姓名">
+			<rule name="最小值" value="18" />
+		</item>
+	</ruleGroup>
+	
+	<def id="not_null_check">
+		<rule name="最大长度" value="40" />
+		<rule name="最小长度" value="1"/>
+	</def>
+	
+	<def id="data_big_check">
+		<rule name="最大值" value="99" />
+		<rule name="最小值" value="1"/>
+	</def>
+	
+	<def id="big_data_check">
+		<rule name="最大值" value="99999999" />
+		<rule name="最小值" value="1"/>
+	</def>
+	
+	<def id="data_code_check">
+		<rule name="最大值" value="32" />
+		<rule name="最小值" value="1"/>
+	</def>
+	
+	<!-- 创建项目需求 -->
+	<ruleGroup id="create_new_project" desc="创建项目需求信息" message="创建项目需求信息错误">
+		<item name="project_name" type="string" require="true" ref="not_null_check" desc="项目名称"  message="项目名称不合法"/>
+		<item name="project_catg_name" type="string" require="true" ref="not_null_check" desc="项目分类"  message="项目分类不合法"/>
+		<item name="project_cycle" type="int" require="true" ref="data_big_check" desc="项目周期" message="项目周期不合法"/>
+		<item name="cycle_unit" type="string" require="true" ref="not_null_check" desc="周期单位" message="周期单位不合法"/>	
+		<item name="budget_amount" type="int" require="true" ref="big_data_check" desc="预算金额" message="预算金额不合法"/>
+		<item name="budget_type" type="int" require="true" ref="data_big_check" desc="预算金额类型" message="预算金额类型不合法" />
+		<item name="proj_province" type="string" require="true" ref="not_null_check" desc="省" message="选择省不合法" />
+		<item name="proj_city" type="string" require="true" ref="not_null_check" desc="市" message="选择市不合法"/>
+		<item name="proj_area" type="string" require="true" ref="not_null_check" desc="县区" message="选择县区不合法"/>
+		<item name="proj_addr" type="string" require="true" desc="地址" message="地址不合法">
+			<rule name="最大长度" value="40" />
+			<rule name="最小长度" value="1"/>
+		</item>	
+		<item name="project_desc" type="string" require="true" desc="项目描述" message="项目描述不合法">
+			<rule name="最大长度" value="400" />
+			<rule name="最小长度" value="1"/>
+		</item>
+	</ruleGroup>
+	
+	<!-- 审核 人员实名 -->
+	<ruleGroup id="audit_user" desc="客服审核人员实名认证" message="客服审核人员实名认证错误">
+		<item name="through" type="string" require="true" ref="not_null_check" desc="审核是否通过"  message="是否通过不合法"/>
+		
+		<item name="remark" type="string" require="true" desc="审核意见" message="审核意见不合法">
+			<rule name="最大长度" value="400" />
+			<rule name="最小长度" value="1"/>
+		</item>
+	</ruleGroup>
+	
+	<def id="StringSN">
+		<rule name="区间长度" value="4,64"/>
+	</def>
+	
+	<def id="StringSN2">
+		<rule name="区间长度" value="1,32"/>
+	</def>
+	
+	<def id="StringSN3">
+		<rule name="区间长度" value="1,16"/>
+	</def>
+	<def id="StringSN4">
+		<rule name="区间长度" value="1,128"/>
+	</def>
+	<def id="min">
+		<rule name="最小值" value="0"/>
+	</def>
+	<def id="urlList">
+		<rule name="区间长度" value="1,5"/>
+	</def>
+	<ruleGroup id="addProxyUser" desc="新增雇主" message="新增雇主不合法" >
+		<item name="phone" type="string" require="true" desc="手机号" message="手机号不合法" ref="StringSN2"/> 
+		<item name="nick_name" type="string" require="true" desc="用户昵称" message="用户昵称不合法" ref="StringSN2"/>
+		<item name="gender " type="string" require="true" desc="性别" message="性别不合法" ref="StringSN3"/>
+		<item name="birthday " type="string" require="true" desc="生日" message="生日不合法" ref="StringSN3"/>
+		
+		<item name="email " type="string" require="true" desc="邮箱" message="邮箱不合法" ref="StringSN2"/>				
+		<item name="proj_province" type="string" require="true" desc="省" message="省名不合法" ref="StringSN2"/>
+		<item name="proj_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="StringSN2"/>
+		<item name="proj_city" type="string" require="true" desc="市" message="市名不合法" ref="StringSN2"/>
+		<item name="proj_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="StringSN2"/>
+		<item name="proj_area" type="string" require="true" desc="区" message="区名不合法" ref="StringSN2"/>
+		<item name="proj_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="StringSN2"/>
+	</ruleGroup>
+	
+	<ruleGroup id="insertProject" desc="代发项目" message="代发项目不合法" >
+		<item name="project_catg_id" type="string" require="true" desc="项目分类" message="项目分类不合法" ref="StringSN2"/> 
+		<item name="project_catg_name" type="string" require="true" desc="项目分类" message="项目分类名称不合法" ref="StringSN4"/>
+		<item name="project_catg_path" type="string" require="true" desc="项目分类" message="项目分类名称不合法" ref="StringSN4"/>
+		<item name="project_name" type="string" require="true" desc="项目特征" message="项目特征名称不合法" ref="StringSN2"/>
+		<item name="employer_id" type="long" require="true" desc="用户ID" message="用户ID不合法" ref="min"/>
+		<item name="employer_name" type="string" require="true" desc="雇主名称" message="用户ID不合法" ref="StringSN2"/>
+		<item name="adviser_id" type="long" require="true" desc="顾问ID" message="用户ID不合法" ref="min"/>
+		<item name="adviser_name" type="string" require="true" desc="顾问ID" message="用户ID不合法" ref="StringSN2"/>
+		<item name="project_cycle" type="int" require="true" desc="顾问ID" message="用户ID不合法" ref="min"/>
+		<item name="cycle_unit" type="string" require="true" desc="顾问ID" message="用户ID不合法"  ref="StringSN2"/>
+		<item name="cycle_unit_name" type="string" require="true" desc="顾问ID" message="用户ID不合法"  ref="StringSN2"/>
+		<item name="budget_amount" type="int" require="true" desc="顾问ID" message="用户ID不合法"  ref="min"/>
+		<item name="budget_type" type="int" require="true" desc="预算金额类型" message="预算金额类型不合法" >
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="proj_province" type="string" require="true" desc="省" message="省名不合法" ref="StringSN2"/>
+		<item name="proj_province_code" type="string" require="true" desc="省编码" message="省编码不合法" ref="StringSN2"/>
+		<item name="proj_city" type="string" require="true" desc="市" message="市名不合法" ref="StringSN2"/>
+		<item name="proj_city_code" type="string" require="true" desc="市编码" message="市编码不合法" ref="StringSN2"/>
+		<item name="proj_area" type="string" require="true" desc="区" message="区名不合法" ref="StringSN2"/>
+		<item name="proj_area_code" type="string" require="true" desc="区编码" message="区编码不合法" ref="StringSN2"/>
+		<item name="proj_addr" type="string" require="true" desc="具体地址" message="具体地址不合法" ref="StringSN4"/>
+		<item name="project_desc" type="string" require="true" desc="需求描述" message="需求描述不合法">
+			<rule name="区间长度" value="1,1024"/>
+		</item>
+		<item name="behalf" type="int" require="true" desc="代建项目" message="代建项目不合法">
+			<rule name="枚举值" value="1"/>
+		</item>
+	</ruleGroup>
+	<ruleGroup id="updateProjectCase" desc="案例审核" message="案例审核不合法" >
+		<item name="project_case_sn" type="string" require="true" desc="案例编号" message="案例编号不合法" ref="StringSN2"/>
+		<item name="through" type="int" require="true" desc="认证是否通过" message="认证不合法">
+			<rule name="枚举值" value="1,2"/>
+		</item>
+		<item name="remark" type="string" require="true" desc="案例编号" message="案例编号不合法">
+			<rule name="区间长度" value="1,512"/>
+		</item>
+		<item name="case_d_type" type="int" require="true" desc="案例审核类型" message="案例审核类型不合法">
+			<rule name="枚举值" value="0,10,20,30,40"/>	
+		</item>
+	</ruleGroup>
+	
+</validate>

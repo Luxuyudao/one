@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 顾问中心 -->
+	<c url="/tvr-project/getMyProjectListP36" transfer="http://all.demo1.service/tvr-project/getMyProjectListP36"></c>
+	<!-- 顾问中心  状态总计 -->
+	<c url="/tvr-project/getAdvisorProjectStatsP35" transfer="http://all.demo1.service/tvr-project/getAdvisorProjectStatsP35"></c>
+	<!-- 项目执行 -->
+	<c url="/tvr-project/getProjectTaskList" transfer="http://all.demo1.service/tvr-project/getProjectTaskList"></c>
+	<!-- 项目详情基本信息 -->
+	<c url="/tvr-project/getProject1" transfer="http://all.demo1.service/tvr-project/getProject1"></c>
+	<!-- 项目详情 -->
+	<c url="/tvr-project/getProject4" transfer="http://all.demo1.service/tvr-project/getProject4"></c>
+	<!-- 任务详情 P24 P26 -->
+	<c url="/tvr-project/getProjectTask2" transfer="http://all.demo1.service/tvr-project/getProjectTask2"></c>
+	<c url="/tvr-project/getProjectTask4" transfer="http://all.demo1.service/tvr-project/getProjectTask4"></c>
+	<c url="/tvr-project/getTaskReports" transfer="http://all.demo1.service/tvr-project/getTaskReports"></c>
+	<!-- 我的案例 P30 -->
+	<c url="/tvr-project/getMyCaseList" transfer="http://all.demo1.service/tvr-project/getMyCaseList"></c>
+	<!-- 案例展示 -->
+	<c url="/tvr-project/getMyCase" transfer="http://all.demo1.service/tvr-project/getMyCase"></c>
+	<!-- 案例提交 -->
+	<c url="/project-operate/insertProjectCaseP32" validate="val-advisor.insertProjectCase"
+		transfer="http://all.demo1.service/project-operate/insertProjectCaseP32"></c>
+	<!-- 日报详情 -->
+	<c url="/tvr-project/getTaskReport" transfer="http://all.demo1.service/tvr-project/getTaskReport"></c>
+	<!-- 任务终止 -->
+	<c url="/tvr-project/getProjectTask1" transfer="http://all.demo1.service/tvr-project/getProjectTask1"></c>
+	<!-- 项目基本详情 P4    用于提交合约-->
+	<c url="/tvr-project/getProject2" transfer="http://all.demo1.service/tvr-project/getProject2"></c>
+	<c url="/tvr-project/getProject3" transfer="http://all.demo1.service/tvr-project/getProject3"></c>
+	<!-- 提交合约 -->
+	<c url="/project-operate/updateProjectP38" validate="val-advisor.updateProjectP38" transfer="http://all.demo1.service/project-operate/updateProjectP38"></c>
+	<!-- 任务验收 -->
+	<c url="/project-operate/updateTaskP46" validate="val-advisor.updateTaskP46" transfer="http://all.demo1.service/project-operate/updateTaskP46"></c>
+	
+	<!-- 项目验收 -->
+	<c url="/project-operate/updateProjectP48" validate="val-advisor.updateProjectP48" transfer="http://all.demo1.service/project-operate/updateProjectP48"></c>
+	
+	<!-- 任务添加 -->
+	<c url="/project-operate/insertTask" validate="val-advisor.insertTask" transfer="http://all.demo1.service/project-operate/insertTask">
+		<assembly call="{advisorAssembly}.insertTask" />
+	</c>
+	<c url="/tvr-project/getProviderListP42" transfer="http://all.demo1.service/tvr-project/getProviderListP42"></c>
+	<!-- 任务编辑updateProjectTaskP69 -->
+	<c url="/project-operate/updateProjectTaskP69" validate="val-advisor.updateProjectTaskP69" transfer="http://all.demo1.service/project-operate/updateProjectTaskP69"></c>
+	<c url="/tvr-project/getIdAndNameBySn" transfer="http://all.demo1.service/tvr-project/getIdAndNameBySn"></c>
+	<!-- 任务终止 -->
+	<c url="/project-operate/updateTaskP45" validate="val-advisor.updateTaskP45" transfer="http://all.demo1.service/project-operate/updateTaskP45"></c>
+	<!-- 应收款项 -->
+	<c url="/tvr-finance/getBillListF14" transfer="http://all.demo1.service/tvr-finance/getBillListF14"></c>
+	<!-- 应收款项 -->
+	<c url="/tvr-project/getMyCaseListP61" transfer="http://all.demo1.service/tvr-project/getMyCaseListP61"></c>
+	
+	<!-- 获取县区地市列表 -->
+	<c url="/tvr-system/getAreaList" transfer="http://all.demo1.service/tvr-system/getAreaList" />
+	<!-- 渲染页面下拉列表框 -->
+	<c url="/tvr-system/getdictList" transfer="http://all.demo1.service/tvr-system/getdictList" />
+	
+	<!-- 行业分类 列表展示-->
+	<c url="/tvr-system/industrylist"  transfer="http://all.demo1.service/tvr-system/industrylist" />
+	
+	<!-- 任务分类  页面select 渲染-->
+	<c url="/renderPage/getRenderTask"  transfer="http://all.demo1.service/tvr-system/getRenderTask" />
+	<!-- 修改案例-->
+	<c url="/project-operate/updateProjectCaseP55" validate="val-advisor.updateProjectCaseP55" transfer="http://all.demo1.service/project-operate/updateProjectCaseP55" />
+	<!-- 审核意见-->
+	<c url="/tvr-project/getCaseAuditListP56"  transfer="http://all.demo1.service/tvr-project/getCaseAuditListP56"/>
+	<c url="/tvr-user" exec="{userSwitch}.userSwitch"/>
+	<bean id="userSwitch" class="com.taovr.core.web.PlatformUserSwitch" />
+	
+	<bean id="down" class="com.taovr.core.web.DownloadController" />
+	<c url="/down" validate="down" exec="{down}.download"/>	
+	
+	<bean id="file" class="com.taovr.core.web.FileController" />
+	<bean id="commonAssembly" class="com.taovr.core.web.CommonAssembly" />
+	<bean id="advisorAssembly" class="com.taovr.advisor.AdvisorAssembly" />
+
+	<assembly call="{commonAssembly}.addUserInfo">
+		<include>/*</include>
+		<exclude>/uploadFile</exclude>
+		<exclude>/uploadImage</exclude>
+		<exclude>/uploadVideo</exclude>
+		<exclude>/tvr-project/getProviderListP42</exclude>
+	</assembly>
+
+	<c url="/uploadFile" exec="{file}.uploadFile" />
+	<c url="/uploadImage" exec="{file}.uploadImage" />
+	<c url="/uploadVideo" exec="{file}.uploadVideo" />
+
+</web-controller>

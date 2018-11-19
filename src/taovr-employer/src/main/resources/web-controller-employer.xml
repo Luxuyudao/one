@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	
+	<bean id="userSwitch" class="com.taovr.core.web.PlatformUserSwitch" />
+	<bean id="file" class="com.taovr.core.web.FileController" />
+	<bean id="down" class="com.taovr.core.web.DownloadController" />
+	<bean id="commonAssembly" class="com.taovr.core.web.CommonAssembly" />
+	<bean id="ipAssembly" class="com.taovr.web.employer.InsertProjectAssembly" />
+
+	<assembly call="{commonAssembly}.addUserInfo">
+		<include>/*</include>
+		<exclude>/uploadFile</exclude>
+		<exclude>/uploadImage</exclude>
+		<exclude>/uploadVideo</exclude>
+	</assembly>	
+	
+	
+	<!-- 测试 -->
+	<c url="/tvr-test/getXxx" transfer="http://all.demo1.service/tvr-test/getXxx" cache="${url}"/>
+	<!-- 项目中心，项目详情列表 -->
+	<c url="/tvr-project/getProject4" transfer="http://all.demo1.service/tvr-project/getProject4" />
+	<!-- 首页, 我的项目列表 -->
+	<c url="/tvr-project/getMyProjectListP15" transfer="http://all.demo1.service/tvr-project/getMyProjectListP15" />
+	<!-- 项目验收 -->
+	<c url="/tvr-project/getProject3" transfer="http://all.demo1.service/tvr-project/getProject3" />
+	<c url="/project-operate/updateProjectP11" validate="rule_employer.updateProjectP11" transfer="http://all.demo1.service/project-operate/updateProjectP11" />
+	<!-- 发布需求 -->
+	<c url="/project-operate/insertProject" validate="rule_employer.create_new_project" transfer="http://all.demo1.service/project-operate/insertProject">
+		<assembly call="{ipAssembly}.insertProject" order="100"/>
+	</c>
+	<!-- 任务验收 -->
+	<c url="/tvr-project/getProjectTask4" transfer="http://all.demo1.service/tvr-project/getProjectTask4" />
+	<c url="/project-operate/updateTaskP10"  validate="rule_employer.updateTaskP10" transfer="http://all.demo1.service/project-operate/updateTaskP10"/>
+	<!-- 日报详情 -->
+	<c url="/tvr-project/getTaskReport" transfer="http://all.demo1.service/tvr-project/getTaskReport" />
+	<!-- 编辑任务 查询列表  P3 -->
+	<c url="/tvr-project/getProject1" transfer="http://all.demo1.service/tvr-project/getProject1" />
+	<!-- 我的案例   分页   P30 -->
+	<c url="/tvr-project/getMyCaseList" transfer="http://all.demo1.service/tvr-project/getMyCaseList" />
+	<!-- 我的案例  查看   P30 -->
+	<c url="/tvr-project/getMyCase" transfer="http://all.demo1.service/tvr-project/getMyCase" />
+	<!-- 应付账单  查看 F13 -->
+	<c url="/tvr-finance/getBillListF13" transfer="http://all.demo1.service/tvr-finance/getBillListF13" />
+	<!-- 项目签约 -->
+	<c url="/project-operate/updateProjectP9" validate="rule_employer.updateProjectP9" transfer="http://all.demo1.service/project-operate/updateProjectP9" />
+	
+	<!-- 获取县区地市列表 -->
+	<c url="/tvr-system/getAreaList" transfer="http://all.demo1.service/tvr-system/getAreaList" />
+	<!-- 渲染页面下拉列表框 -->
+	<c url="/tvr-system/getdictList" transfer="http://all.demo1.service/tvr-system/getdictList" />
+	<!-- 渲染行业分类下拉列表框 -->
+	<c url="/tvr-system/industrylist" transfer="http://all.demo1.service/tvr-system/industrylist" />
+	
+	<!-- 雇主 首页 待审核  待验收  待支付 待评价 -->
+	<c url="/tvr-project/getEmployerProjectStatsP16" transfer="http://all.demo1.service/tvr-project/getEmployerProjectStatsP16" />
+	
+	<c url="/tvr-user/getUser1"  transfer="http://all.demo1.service/tvr-user/getUser1" />
+	
+	<c url="/tvr-user" exec="{userSwitch}.userSwitch"/>
+	
+	<c url="/down" validate="down" exec="{down}.download"/>
+	
+	<c url="/uploadFile" exec="{file}.uploadFile" />
+	<c url="/uploadImage" exec="{file}.uploadImage" />
+	<c url="/uploadVideo" exec="{file}.uploadVideo" />
+	
+</web-controller>

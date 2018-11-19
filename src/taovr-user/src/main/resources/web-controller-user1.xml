@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-controller xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/schema/web/webcontroller.xsd">
+	<!-- 提交案例 -->
+	<c url="/project-operate/insertProjectCaseP32" transfer="http://all.demo1.service/project-operate/insertProjectCaseP32"></c>
+	<!-- 修改信息 -->
+	<c url="/tvr-user/updateUser2" validate="v_user.update_p_user"  transfer="http://all.demo1.service/tvr-user/updateUser2"></c>
+	<!-- 实名认证 -->
+	<c url="/tvr-user/getUserlistu13" transfer="http://all.demo1.service/tvr-user/getUserlistu13"></c>
+	
+	<!-- 个人提交实名认证 -->
+	<c url="/tvr-user/insertCert" validate="v_user.insert_v_cert" transfer="http://all.demo1.service/tvr-user/insertCert"></c>
+	<!-- 公司提交实名认证 -->
+	<c url="/tvr-user/insertCert2" validate="v_user.insert_v_cert2" transfer="http://all.demo1.service/tvr-user/insertCert"></c>
+	
+	<!-- 个人修改实名认证 -->
+	<c url="/tvr-user/updateCert" validate="v_user.insert_v_cert" transfer="http://all.demo1.service/tvr-user/updateCert"></c>
+	<!-- 公司修改实名认证 -->
+	<c url="/tvr-user/updateCert2" validate="v_user.insert_v_cert2" transfer="http://all.demo1.service/tvr-user/updateCert"></c>
+	
+	<!-- 编辑案例 -->
+	<c url="/tvr-project/getCaseAuditListP56" transfer="http://all.demo1.service/tvr-project/getCaseAuditListP56"/>
+	<c url="/tvr-project/getMyCase" transfer="http://all.demo1.service/tvr-project/getMyCase"/>
+	<c url="/project-operate/updateProjectCaseP55" transfer="http://all.demo1.service/project-operate/updateProjectCaseP55"/>
+	<!-- 我的案例列表 -->
+	<c url="/tvr-project/getMyCaseListP61" transfer="http://all.demo1.service/tvr-project/getMyCaseListP61"/>
+</web-controller>

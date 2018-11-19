@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://xson.org/tangyuan/sqlservices.xsd"
+	ns="tvr-user">
+	
+	<!-- U1	获取用户基本信息		filter	-->
+	<selectOne id="getUser1" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_user where user_id = #{user_id}
+	</selectOne>
+	
+	<!-- U1	获取用户基本信息		自定义	-->
+	<selectOne id="getUser" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_user where user_id = #{userid}
+	</selectOne>
+	
+	<!-- U2	修改用户基本信息		通用	-->
+	<update id="updateUser" rowCount="{rowCount}" dsKey="writetvr" txRef="tx_01">
+		update tvr_user set
+			<if test="{user_pwd}!='' and {user_pwd}!=null">
+               	user_pwd = #{user_pwd},
+            </if>
+            <if test="{pwd_strength}!='' and {pwd_strength}!=null">
+               	pwd_strength = #{pwd_strength},
+            </if>
+            <if test="{nick_name}!='' and {nick_name}!=null">
+               	nick_name = #{nick_name},
+            </if>
+            <if test="{gender}!='' and {gender}!=null">
+               	gender = #{gender},
+            </if>
+            <if test="{birthday}!='' and {birthday}!=null">
+               	birthday = #{birthday},
+            </if>
+            <if test="{industry}!='' and {industry}!=null">
+               	industry = #{industry},
+            </if>
+            <if test="{contact_phone}!='' and {contact_phone}!=null">
+               	contact_phone = #{contact_phone},
+            </if>
+            <if test="{user_province}!='' and {user_province}!=null">
+               	user_province = #{user_province},
+            </if>
+            <if test="{user_province_code}!='' and {user_province_code}!=null">
+               	user_province_code = #{user_province_code},
+            </if>
+            <if test="{user_city}!='' and {user_city}!=null">
+               	user_city = #{user_city},
+            </if>
+            <if test="{user_city_code}!='' and {user_city_code}!=null">
+               	user_city_code = #{user_city_code},
+            </if>
+            <if test="{user_area}!='' and {user_area}!=null">
+               	user_area = #{user_area},
+            </if>
+            <if test="{user_area_code}!='' and {user_area_code}!=null">
+               	user_area_code = #{user_area_code},
+            </if>
+            <if test="{user_addr}!='' and {user_addr}!=null">
+               	user_addr = #{user_addr},
+            </if>
+            <if test="{email}!='' and {email}!=null">
+               	email = #{email},
+            </if>
+            <if test="{avatar}!='' and {avatar}!=null">
+               	avatar = #{avatar},
+            </if>
+            <if test="{active_state}!='' and {active_state}!=null">
+               	active_state = #{active_state},
+            </if>
+            <if test="{user_state}!='' and {user_state}!=null">
+               	user_state = #{user_state},
+            </if>
+            <if test="{cert_type}!='' and {cert_type}!=null">
+               	cert_type = #{cert_type},
+            </if>
+            <if test="{is_employer}!='' and {is_employer}!=null">
+               	is_employer = #{is_employer},
+            </if>
+            <if test="{is_advisor}!='' and {is_advisor}!=null">
+               	is_advisor = #{is_advisor},
+            </if>
+            <if test="{is_providers}!='' and {is_providers}!=null">
+               	is_providers = #{is_providers},
+            </if>
+           	update_time = #{update_time|now()}
+        where
+           	user_id = #{user_id}	
+	</update>
+	
+	
+	<!-- U2	修改用户基本信息		通用	-->
+	<update id="updateUser2" rowCount="{rowCount}" dsKey="writetvr" txRef="tx_01">
+		update tvr_user set
+			<if test="{user_pwd}!='' and {user_pwd}!=null">
+               	user_pwd = #{user_pwd},
+            </if>
+            <if test="{pwd_strength}!='' and {pwd_strength}!=null">
+               	pwd_strength = #{pwd_strength},
+            </if>
+            <if test="{nickname}!='' and {nickname}!=null">
+               	nick_name = #{nickname},
+            </if>
+            <if test="{gender}!='' and {gender}!=null">
+               	gender = #{gender},
+            </if>
+            <if test="{birthday}!='' and {birthday}!=null">
+               	birthday = #{birthday},
+            </if>
+            <if test="{industry}!='' and {industry}!=null">
+               	industry = #{industry},
+            </if>
+            <if test="{contact_phone}!='' and {contact_phone}!=null">
+               	contact_phone = #{contact_phone},
+            </if>
+            <if test="{user_province}!='' and {user_province}!=null">
+               	user_province = #{user_province},
+            </if>
+            <if test="{user_province_code}!='' and {user_province_code}!=null">
+               	user_province_code = #{user_province_code},
+            </if>
+            <if test="{user_city}!='' and {user_city}!=null">
+               	user_city = #{user_city},
+            </if>
+            <if test="{user_city_code}!='' and {user_city_code}!=null">
+               	user_city_code = #{user_city_code},
+            </if>
+            <if test="{user_area}!='' and {user_area}!=null">
+               	user_area = #{user_area},
+            </if>
+            <if test="{user_area_code}!='' and {user_area_code}!=null">
+               	user_area_code = #{user_area_code},
+            </if>
+            <if test="{user_addr}!='' and {user_addr}!=null">
+               	user_addr = #{user_addr},
+            </if>
+            <if test="{email}!='' and {email}!=null">
+               	email = #{email},
+            </if>
+            <if test="{avatar}!='' and {avatar}!=null">
+               	avatar = #{avatar},
+            </if>
+            <if test="{active_state}!='' and {active_state}!=null">
+               	active_state = #{active_state},
+            </if>
+            <if test="{user_state}!='' and {user_state}!=null">
+               	user_state = #{user_state},
+            </if>
+            <if test="{cert_type}!='' and {cert_type}!=null">
+               	cert_type = #{cert_type},
+            </if>
+            <if test="{is_employer}!='' and {is_employer}!=null">
+               	is_employer = #{is_employer},
+            </if>
+            <if test="{is_advisor}!='' and {is_advisor}!=null">
+               	is_advisor = #{is_advisor},
+            </if>
+            <if test="{is_providers}!='' and {is_providers}!=null">
+               	is_providers = #{is_providers},
+            </if>
+           	update_time = #{update_time|now()}
+        where
+           	user_id = #{user_id}	
+	</update>
+	
+	<!-- U4	提交个人/公司实名认证 -->
+	<sql-service id="insertCert" dsKey="writetvr" txRef="tx_01">
+		<insert incrementKey="{ID}">
+			INSERT INTO tvr_user_cert(
+				user_id,mobile_phone, cert_type, cert_name, cert_number, pip_url, nip_url, 
+				co_phone, co_leal_person, co_contact_name, co_contact_phone, co_account, 
+				co_deposit_bank, co_web , co_email, co_bus_url, province, province_code, city, city_code, area, 
+				area_code, addr, audit_state, create_time, update_time
+			) VALUES(
+				#{user_id},#{mobile_phone}, #{cert_type}, #{cert_name}, #{cert_number}, #{pip_url}, #{nip_url}, 
+				#{co_phone|''}, #{co_leal_person|''}, #{co_contact_name|''}, #{co_contact_phone|''}, #{co_account|''}, 
+				#{co_deposit_bank|''}, #{co_web|''}, #{co_email|''}, #{co_bus_url|''}, #{province|''}, #{province_code|''}, #{city|''}, #{city_code|''}, #{area|''}, 
+				#{area_code|''}, #{addr|''}, #{audit_state|10}, #{create_time|now()}, #{update_time|now()}
+			)
+		</insert>
+		<selectOne resultKey="{audit}">
+			select * from tvr_user_audit where user_id=#{user_id}
+		</selectOne>
+		<if test="{audit}==null">
+			<insert >
+				INSERT INTO tvr_user_audit(
+					user_id, cert_audit, card_audit, case_audit, user_type, create_time, update_time
+				) VALUES(
+					#{user_id}, #{audit_state|10}, #{card_audit|0}, #{case_audit|0}, #{user_type|0}, #{create_time|now()}, #{update_time|now()}
+				)
+			</insert>
+		</if>
+		<else>
+			<update>
+				update tvr_user_audit set
+					<if test="{audit_state}!='' and {audit_state}!=null">
+		               	cert_audit = #{audit_state},
+		            </if>
+		            update_time = #{update_time|now()}
+	        	where
+	           		user_id = #{user_id}
+			</update>
+		</else>
+		<return>
+			<property value="{ID}"/>
+		</return>
+	</sql-service>
+	
+	<!-- U9	修改个人/公司实名认证 -->
+	<sql-service id="updateCert" dsKey="writetvr" txRef="tx_01">
+		<update rowCount="{rowCount}">
+			update tvr_user_cert set
+				<if test="{cert_type}!='' and {cert_type}!=null">
+	               	cert_type = #{cert_type},
+	            </if>
+	            <if test="{cert_name}!='' and {cert_name}!=null">
+	               	cert_name = #{cert_name},
+	            </if>
+	            <if test="{cert_number}!='' and {cert_number}!=null">
+	               	cert_number = #{cert_number},
+	            </if>
+	            <if test="{pip_url}!='' and {pip_url}!=null">
+	               	pip_url = #{pip_url},
+	            </if>
+	            <if test="{nip_url}!='' and {nip_url}!=null">
+	               	nip_url = #{nip_url},
+	            </if>
+	            <if test="{co_phone}!='' and {co_phone}!=null">
+	               	co_phone = #{co_phone},
+	            </if>
+	            <if test="{co_leal_person}!='' and {co_leal_person}!=null">
+	               	co_leal_person = #{co_leal_person},
+	            </if>
+	            <if test="{co_contact_name}!='' and {co_contact_name}!=null">
+	               	co_contact_name = #{co_contact_name},
+	            </if>
+	            <if test="{co_contact_phone}!='' and {co_contact_phone}!=null">
+	               	co_contact_phone = #{co_contact_phone},
+	            </if>
+	            <if test="{co_account}!='' and {co_account}!=null">
+	               	co_account = #{co_account},
+	            </if>
+	            <if test="{co_deposit_bank}!='' and {co_deposit_bank}!=null">
+	               	co_deposit_bank = #{co_deposit_bank},
+	            </if>
+	            <if test="{co_web}!='' and {web}!=null">
+	               	co_web = #{co_web},
+	            </if>
+	            <if test="{co_email}!='' and {co_email}!=null">
+	               	co_email = #{co_email},
+	            </if>
+	            <if test="{co_bus_url}!='' and {co_bus_url}!=null">
+	               	co_bus_url = #{co_bus_url},
+	            </if>
+	            <if test="{province}!='' and {province}!=null">
+	               	province = #{province},
+	            </if>
+	            <if test="{province_code}!='' and {province_code}!=null">
+	               	province_code = #{province_code},
+	            </if>
+	            <if test="{city}!='' and {city}!=null">
+	               	city = #{city},
+	            </if>
+	            <if test="{city_code}!='' and {city_code}!=null">
+	               	city_code = #{city_code},
+	            </if>
+	            <if test="{area}!='' and {area}!=null">
+	               	area = #{area},
+	            </if>
+	            <if test="{area_code}!='' and {area_code}!=null">
+	               	area_code = #{area_code},
+	            </if>
+	            <if test="{addr}!='' and {addr}!=null">
+	               	addr = #{addr},
+	            </if>
+	            <if test="{audit_state}!='' and {audit_state}!=null">
+	               	audit_state = #{audit_state},
+	            </if>
+	            update_time = #{update_time|now()}
+        	where
+           		user_cert_id = #{user_cert_id}
+		</update>
+		<!-- 更新状态 审核表 -->
+		<update>
+			update tvr_user_audit set
+				<if test="{audit_state}!='' and {audit_state}!=null">
+	               	cert_audit = #{audit_state},
+	            </if>
+	            update_time = #{update_time|now()}
+        	where
+           		user_id = #{user_id}
+		</update>
+		
+		<return>
+			<property value="{rowCount}"/>
+	    </return>
+	</sql-service>
+	
+	<!-- U5	获取短信验证码 -->
+	<insert id="insertMobileCe" dsKey="writetvr" txRef="tx_01">
+		INSERT INTO tvr_mobile_ce(
+			user_id, mobile_phone, ce_into, ce_type, effective_time, create_time, update_time
+		) VALUES(
+			#{user_id}, #{mobile_phone}, #{ce_into}, #{ce_type}, #{effective_time}, #{create_time|now()}, #{update_time|now()}
+		)
+	</insert>
+	
+	<!--U6 修改密码 -->
+	<sql-service id="updatePwd" dsKey="writetvr" txRef="tx_01">
+		<!-- 查询用户某类型下最后一条短信验证码 -->
+		<selectOne resultKey="{sms}">
+			select * from tvr_mobile_ce where mobile_phone = #{mobile_phone} and ce_type = #{ce_type} order by mobile_ce_id desc limit 1
+		</selectOne>
+		<exception test="{sms} == null" code="13001" message="验证码输入不正确"></exception>
+		<selectOne resultKey="{sms2}">
+			<![CDATA[
+				select * from tvr_mobile_ce where mobile_phone = #{mobile_phone} and ce_type = #{ce_type} and effective_time > #{effective_time} limit 1
+			]]>
+		</selectOne>
+		<exception test="{sms2} == null" code="13002" message="验证码已过期"></exception>
+		<!-- 修改密码 -->
+		<update rowCount="{rowCount}">
+			update tvr_user set
+				user_pwd = #{user_pwd},
+				update_time = now()
+			where
+				user_id = #{user_id}
+		</update>
+		<return>
+			<property value="{rowCount}"/>
+		</return>
+	</sql-service>
+	
+	<!--U7 修改邮箱 -->
+	<sql-service id="updateEmail" dsKey="writetvr" txRef="tx_01">
+		<!-- 查询用户某类型下最后一条短信验证码 -->
+		<selectOne resultKey="{sms}">
+			select * from tvr_mobile_ce where mobile_phone = #{mobile_phone} and ce_type = #{ce_type} limit 1
+		</selectOne>
+		<exception test="{sms} == null" code="13003" message="验证码输入不正确"></exception>
+		<selectOne resultKey="{sms2}">
+			<![CDATA[
+				select * from tvr_mobile_ce where mobile_phone = #{mobile_phone} and ce_type = #{ce_type} and effective_time > #{effective_time} limit 1
+			]]>
+		</selectOne>
+		<exception test="{sms2} == null" code="13004" message="验证码已过期"></exception>
+		<!-- 修改邮箱 -->
+		<update rowCount="{rowCount}">
+			update tvr_user set
+				email = #{email},
+				update_time = now()
+			where
+				user_id = #{user_id}
+		</update>
+		<return>
+			<property value="{rowCount}"/>
+		</return>
+	</sql-service>
+	
+	<!--U8 注册用户-->
+	<sql-service id="insertUser" dsKey="writetvr" txRef="tx_01">
+		<selectVar resultKey="{count}">
+			select count(1) from tvr_user where mobile_phone = #{phone}
+		</selectVar>
+		<exception test="{count}!=0" code="-1" message="该手机号已经注册！"/>
+		<selectVar resultKey="{user_id}">
+			SELECT nextval('tvr_user')
+		</selectVar>
+		<insert incrementKey="{ID}">
+			INSERT INTO tvr_user(
+				user_id,mobile_phone, user_pwd, pwd_strength, nick_name, gender, birthday, industry, 
+				contact_phone, user_province, user_province_code, user_city, user_city_code, 
+				user_area, user_area_code, user_addr, email, avatar, active_state, user_state, 
+				cert_type, is_employer, is_advisor, is_providers, create_time, update_time
+			) VALUES(
+				#{user_id},#{phone}, #{user_pwd}, #{pwd_strength|1}, #{nick_name|''}, #{gender|'男'}, #{birthday|''}, #{industry|''}, 
+				#{contact_phone|''}, #{user_province|''}, #{user_province_code|''}, #{user_city|''}, #{user_city_code|''}, 
+				#{user_area|''}, #{user_area_code|''}, #{user_addr|''}, #{email|''}, #{avatar|''}, #{active_state|1}, #{user_state|1}, 
+				#{cert_type|0}, #{is_employer|0}, #{is_advisor|0}, #{is_providers|0}, #{create_time|now()}, #{update_time|now()}
+			)
+		</insert>
+		
+		<return>
+			<property value="{user_id}"/>
+		</return>
+	</sql-service>
+	
+	<!-- 查询会员审核列表条件-->
+	<sql id="userCon">
+		
+	    <if test="{phone}!='' and {phone}!=null">
+           	and mobile_phone = #{phone}
+        </if>
+		<if test="{user_state}!='' and {user_state}!=null">
+           	and user_state = #{user_state}
+        </if>
+	</sql> 
+	
+	<!-- U11	获取会员管理列表 -->
+	<sql-service id="getUserlistu11" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_user
+			where 1 = 1
+			<include ref="tvr-user.userCon"/>
+		</selectVar>	
+		<selectSet resultKey="{data}">
+			select * from tvr_user  
+			where 1 = 1
+			<include ref="tvr-user.userCon"/>
+			ORDER BY active_state,user_state 
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{data}"/>
+		</return>
+	</sql-service>
+	
+	<!-- 查询会员审核列表条件-->
+	<sql id="ceCon">
+		<if test="{cert_name}!='' and {cert_name} != null">
+	    	and cert_name = #{cert_name}
+	    </if>
+	    <if test="{cert_number}!='' and {cert_number}!=null">
+            and	cert_number = #{cert_number}
+        </if>
+		<if test="{cert_type}!='' and {cert_type}!=null">
+           	and cert_type = #{cert_type}
+        </if>
+        <if test="{audit_state}!='' and {audit_state}!=null">
+           	and audit_state = #{audit_state}
+        </if>
+        <if test="{starttime}!='' and {starttime}!=null">
+           	and create_time &gt; #{starttime}
+        </if>
+        <if test="{endtime}!='' and {endtime}!=null">
+           	and create_time &lt; #{endtime}
+        </if>
+        <if test="{phone}!='' and {phone}!=null">
+           	and mobile_phone = #{phone}
+        </if>
+	</sql> 
+	
+	<!-- U13	获取会员审核列表 -->
+	<sql-service id="getUserlistu13" dsKey="readtvr" txRef="tx_01">
+		<selectVar resultKey="{total}">
+			SELECT count(1) from tvr_user_cert 
+			where 1 = 1
+			<include ref="tvr-user.ceCon"/>
+		</selectVar>	
+		<selectSet resultKey="{data}">
+			select * from tvr_user_cert 
+			where 1 = 1
+			<include ref="tvr-user.ceCon"/>
+			ORDER BY audit_state
+			limit #{start}, #{pageSize}
+		</selectSet>
+		<return>
+			<property value="{total}"/>
+			<property value="{data}"/>
+		</return>
+	</sql-service>
+	
+	<!-- U14  查询单个审核资料  -->
+	<selectOne id="getOneCert" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_user_cert where user_cert_id = #{user_cert_id}
+	</selectOne>
+	
+	<!-- U15  查询单个审核资料  -->
+	<selectOne id="getOneCert2" dsKey="readtvr" txRef="tx_01">
+		select ce.cert_type cert_cert_type,user.* from tvr_user user 
+		left join 
+			tvr_user_cert ce on ce.user_id = user.user_id
+		where user.user_id = #{user_id}
+	</selectOne>
+	
+	<!-- U16	审核会员资料 -->
+	<sql-service id="auditCert" dsKey="writetvr" txRef="tx_01">
+		<update rowCount="{rowCount}">
+			update tvr_user_cert set
+				audit_state = #{audit_state},
+				update_time = now()
+			where 
+				user_cert_id = #{user_cert_id}
+		</update>
+		<selectOne resultKey="{cert}">
+			select * from tvr_user_cert where user_cert_id = #{user_cert_id}
+		</selectOne>
+		<update>
+			update tvr_user_audit set
+				cert_audit = #{audit_state},
+				update_time = now()
+			where 
+				user_id = #{cert.user_id}
+		</update>
+		<!-- 更新昵称 -->
+		<if test="{audit_state} == 100">
+			<update>
+				update tvr_user set
+					nick_name = #{cert.cert_name}
+				where
+					user_id = #{cert.user_id}
+			</update>
+		</if>
+		<insert>
+			INSERT INTO tvr_user_cert_audit_record(
+				user_cert_id, through, auditor_id, auditor_name, create_time, update_time, remark
+			) VALUES(
+				#{user_cert_id}, #{through}, #{auditor_id|0}, #{auditor_name|''}, #{create_time|now()}, #{update_time|now()}, #{remark}
+			)
+		</insert>
+		<return>
+			<property value="{rowCount}"/>
+		</return>
+	</sql-service>
+
+	<!--U17 用户停用操作-->
+	<sql-service id="userStop" dsKey="writetvr" txRef="tx_01">
+		<update rowCount="{rowCount}">
+			update tvr_user set
+				user_state = #{user_state},
+				update_time = now()
+			where
+				user_id = #{user_id}
+		</update>
+		<return>
+			<property value="{rowCount}"/>
+		</return>
+	</sql-service>
+	
+	<!-- U18	由条件 获取用户基本信息	 		-->
+	<selectOne id="getUserByCon" dsKey="readtvr" txRef="tx_01">
+		select * from tvr_user where 1 = 1
+		<if test="{phone}!='' and {phone}!=null">
+			and mobile_phone = #{phone}
+		</if>
+		<if test="{pwd}!='' and {pwd}!=null">
+			and user_pwd = #{pwd}
+		</if>
+		<if test="{active_state}!='' and {active_state}!=null">
+			and active_state = #{active_state}
+		</if>
+		<if test="{user_state}!='' and {user_state}!=null">
+			and active_state = #{active_state}
+		</if>
+		<if test="{cert_type}!='' and {cert_type}!=null">
+			and cert_type = #{cert_type}
+		</if>
+		<if test="{is_employer}!='' and {is_employer}!=null">
+			and is_employer = #{is_employer}
+		</if>
+		<if test="{is_advisor}!='' and {is_advisor}!=null">
+			and is_advisor = #{is_advisor}
+		</if>
+		<if test="{is_providers}!='' and {is_providers}!=null">
+			and is_providers = #{is_providers}
+		</if>
+		limit 1
+	</selectOne>
+	
+	<!-- U19	获取用户审核申请信息user_audit	-->
+	<sql-service id="userAuditInfo" dsKey="readtvr" txRef="tx_01">
+		<selectOne resultKey="{data}">
+			select * from tvr_user_audit where user_id = #{user_id}
+		</selectOne>
+		<return>
+			<property value="{data}"/>
+		</return>
+	</sql-service>
+	
+	<!-- U20	提交总申请（实名   案例）-->
+	<sql-service id="updateAllCert" dsKey="writetvr" txRef="tx_01">
+		<selectOne resultKey="{audit}">
+			select * from tvr_user_audit where user_id = #{user_id} limit 1
+		</selectOne>
+
+		<exception test="{audit.user_type} == {dtype}" code="20001" message="你已经提过该申请类型的申请了！"/>
+		<exception test="{audit.cert_audit} != 100" code="20002" message="用户资料审核未通过！"/>
+		<exception test="{audit.case_audit} != 100" code="20003" message="用户案例审核未通过！"/>
+		<exception test="{audit.prof_audit} != 100" code="20004" message="用户职业信息审核未通过！"/>
+		<!-- 更新状态 审核表 -->
+		<update rowCount="{rowCount}">
+			update tvr_user_audit set
+				<if test="{dtype}!='' and {dtype}!=null">
+	               	user_type = #{dtype},
+	            </if>
+	            update_time = #{update_time|now()}
+        	where
+        		1 = 1 
+           		and user_id = #{user_id}
+           		and cert_audit = 100
+           		and case_audit = 100
+           		and prof_audit = 100
+		</update>
+		<return>
+			<property value="{rowCount}"/>
+	    </return>
+	</sql-service>
+	
+	<!-- 定时任务审核 通过实名认证和案例认证的用户成为 服务商或者顾问 -->
+	<sql-service id="timerAuditAllCert" dsKey="writetvr" txRef="tx_01">
+		<selectSet resultKey="{auditlist}">
+			select * from tvr_user_audit where audit_state = 1 and cert_audit = 100 and case_audit = 100
+		</selectSet>
+		
+		<if test="{auditlist}!=null">
+			<foreach collection="{auditlist}" index="{i}" separator=",">
+				<update>
+					update tvr_user set
+						<if test="{auditlist[i].user_type} == 1">
+							is_advisor = 1,
+						</if>
+						<if test="{auditlist[i].user_type} == 2">
+							is_providers = 1,
+						</if>
+						audit_state=2,
+						update_time = now()
+					where 
+						user_id = #{auditlist[i].user_id} and is_employer = 1
+				</update>
+			</foreach>
+		</if>
+	</sql-service>
+	
+</sqlservices>
