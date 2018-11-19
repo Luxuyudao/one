@@ -198,14 +198,3 @@ redis是一种存储在内存中的数据库，以键值对的方式存储数据
 		<Context path="" docBase="D:\webSite\demo1-services"  caseSensitive="false" debug="0"></Context>
 	</Host>
 
-## 6. 源码地址
-
-下载地址：<https://gitee.com/hsh2017/pmcloud>
-
-## 7. 公司介绍
-
-北京汇生活网络科技有限公司，承接各种定制化系统开发。本公司专注于电商平台、供应链系统、P2P金融技术的研究和开发，形成了针对不同行业企业的不同规模和应用定制系列产品和针对性解决方案，是国内较有影响力的技术提供商。核心团队成员来自于百度、达飞财富等知名企业。
-
-公司官网：<http://www.gatherlife.cn>
-
-公司邮箱：<cs@gatherlife.cn>
